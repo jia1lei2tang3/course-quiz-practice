@@ -4,7 +4,7 @@ self.addEventListener('install', e => {
     caches.open(CACHE)
       .then(c => c.addAll([
         './', './index.html', './manifest.webmanifest', './icon.svg',
-        './通信原理/index.html', './电磁场电磁波/index.html'
+        './通信原理/index.html', './电磁场电磁波/index.html', './数据通信与网络/index.html'
       ]))
       .then(() => self.skipWaiting())
   );
