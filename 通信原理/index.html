@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10161F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="通信原理题库">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<title>通信原理 · 作业题库</title>
+<style>
+  :root {
+    --bg: #10161F;
+    --surface: #182231;
+    --surface-2: #1F2C40;
+    --border: #2A3850;
+    --text: #E8EEF7;
+    --muted: #93A3B8;
+    --accent: #F2B453;
+    --accent-dim: rgba(242, 180, 83, .12);
+    --accent-text: #1A1206;
+    --good: #4CC38A;
+    --good-dim: rgba(76, 195, 138, .12);
+    --bad: #E5696B;
+    --bad-dim: rgba(229, 105, 107, .12);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  button {
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: border-color .12s, background .12s, color .12s;
+  }
+  button:hover { border-color: var(--accent); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  .mono { font-family: Consolas, "JetBrains Mono", ui-monospace, monospace; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 28px 20px 60px; }
+  .hidden { display: none !important; }
+
+  /* ---------- 首页 ---------- */
+  .home-head { margin-bottom: 26px; }
+  .home-title {
+    font-size: 26px; font-weight: 700; letter-spacing: .02em; margin: 0 0 6px;
+  }
+  .home-sub { color: var(--muted); font-size: 13px; }
+  .stack { margin: 0 0 22px; }
+  .stack-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 14px;
+    margin-bottom: 6px;
+  }
+  .stack-bar.on { border-left-color: var(--accent); }
+  .stack-label { display: flex; align-items: baseline; gap: 10px; }
+  .stack-chapter { color: var(--muted); font-size: 12px; }
+  .stack-chapter .mono { font-size: 12px; }
+  .stack-name { font-weight: 600; }
+  .stack-toggles { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .chip {
+    font-size: 12.5px; padding: 3px 10px; border-radius: 6px;
+    color: var(--muted); border-color: var(--border); background: var(--surface-2);
+  }
+  .chip.on {
+    color: var(--accent); border-color: var(--accent); background: var(--accent-dim);
+  }
+  .chip.partial { color: var(--accent); border-color: var(--border); background: var(--accent-dim); }
+  .chip .mono { font-size: 11.5px; opacity: .8; }
+  .chip-sel { font-size: 12px; padding: 3px 8px; border-radius: 6px; color: var(--muted); }
+
+  /* ---------- 逐题选择页 ---------- */
+  .user-input {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); font-size: 13px;
+    padding: 4px 10px; width: 200px; font-family: inherit;
+  }
+  .user-input:focus { outline: none; border-color: var(--accent); }
+  #identChoices { display: flex; gap: 8px; flex-wrap: wrap; }
+  #identChoices .back-btn { font-size: 12.5px; padding: 4px 10px; }
+  .draw-label { color: var(--muted); font-size: 13.5px; white-space: nowrap; }
+  .draw-input { flex: none; width: 84px; text-align: center; }
+  .draw-btn { flex: 1; max-width: 200px; padding: 9px; font-weight: 600; }
+  .add-wrong-btn { color: var(--muted); font-size: 13px; padding: 5px 10px; margin-right: auto; }
+  .add-wrong-btn:hover { color: var(--bad); border-color: var(--bad); }
+  .pick-list { margin-bottom: 16px; }
+  .pick-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 9px 12px; margin-bottom: 6px;
+    cursor: pointer; font-size: 13.5px; line-height: 1.55;
+  }
+  .pick-item.on { border-color: var(--accent); }
+  .pick-item input { margin-top: 4px; accent-color: var(--accent); }
+  .pick-item .pick-num { color: var(--accent); font-weight: 600; white-space: nowrap; }
+  .pick-item .pick-text { color: var(--muted); }
+  .picker-foot { position: sticky; bottom: 12px; }
+  .picker-foot .start-btn { box-shadow: 0 4px 16px rgba(0, 0, 0, .5); }
+  .mode-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .mode-pick { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .mode-pick button { border: none; border-radius: 0; padding: 8px 18px; color: var(--muted); }
+  .mode-pick button + button { border-left: 1px solid var(--border); }
+  .mode-pick button.on { color: var(--accent); background: var(--accent-dim); }
+  .pick-count { color: var(--muted); font-size: 13px; }
+  .pick-count b { color: var(--accent); font-weight: 600; }
+  .start-row { display: flex; gap: 12px; }
+  .start-btn {
+    flex: 1; background: var(--accent); border-color: var(--accent);
+    color: var(--accent-text); font-size: 16px; font-weight: 700; padding: 13px;
+  }
+  .start-btn:hover { filter: brightness(1.06); border-color: var(--accent); }
+  .led {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent-text); margin-right: 8px; vertical-align: 2px;
+    animation: led 2.2s ease-in-out infinite;
+  }
+  @keyframes led { 50% { opacity: .35; } }
+  @media (prefers-reduced-motion: reduce) { .led { animation: none; } }
+  .wrong-btn { padding: 13px 18px; }
+  .wrong-btn b { color: var(--bad); }
+
+  /* ---------- 答题页 ---------- */
+  .quiz-top {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    margin-bottom: 10px;
+  }
+  .back-btn { color: var(--muted); font-size: 13px; padding: 5px 10px; }
+  .quiz-meta { text-align: center; color: var(--muted); font-size: 12.5px; }
+  .quiz-count { text-align: right; color: var(--muted); font-size: 13px; }
+  .quiz-count b { color: var(--text); font-weight: 600; }
+  .bar-track { height: 2px; background: var(--border); border-radius: 2px; margin-bottom: 18px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+  .q-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 22px 24px;
+  }
+  .q-index { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+  .q-index .mono { color: var(--accent); }
+  .q-body { font-size: 16px; margin-bottom: 10px; }
+  .q-img {
+    display: block; max-width: 100%; margin: 0 0 16px;
+    background: #fff; border-radius: 6px;
+  }
+  .opt {
+    display: block; width: 100%; text-align: left;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 14.5px;
+  }
+  .opt .opt-key { color: var(--muted); margin-right: 8px; font-weight: 700; }
+  .opt-img {
+    vertical-align: middle; max-height: 2.6em; margin-left: 6px;
+    background: #fff; border-radius: 3px; padding: 1px;
+  }
+  .opt:not(:disabled):hover { border-color: var(--accent); }
+  .opt:disabled { opacity: 1; cursor: default; }
+  .opt.right { border-color: var(--good); background: var(--good-dim); }
+  .opt.right .opt-key { color: var(--good); }
+  .opt.wrong { border-color: var(--bad); background: var(--bad-dim); }
+  .opt.wrong .opt-key { color: var(--bad); }
+  .feedback { margin: 6px 0 14px; font-size: 14px; }
+  .feedback.good { color: var(--good); }
+  .feedback.bad { color: var(--bad); }
+  .explain {
+    margin: 0 0 14px; padding: 10px 14px; text-align: left;
+    background: var(--surface-2); border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0; font-size: 13.5px; color: var(--muted);
+    line-height: 1.6;
+  }
+  .explain .explain-label { color: var(--accent); font-weight: 600; margin-right: 8px; }
+  .fill-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .fill-label { color: var(--muted); font-size: 13px; min-width: 48px; }
+  .fill-input {
+    flex: 1; background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-size: 14.5px;
+    padding: 9px 12px; font-family: inherit;
+  }
+  .fill-input:focus { outline: none; border-color: var(--accent); }
+  .fill-input.right { border-color: var(--good); background: var(--good-dim); }
+  .fill-input.wrong { border-color: var(--bad); background: var(--bad-dim); }
+  .next-row { text-align: right; }
+  .next-btn { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 600; min-width: 110px; }
+  .key-hint { color: var(--muted); font-size: 12px; margin-top: 14px; text-align: center; }
+
+  /* ---------- 结果页 ---------- */
+  .result-head { text-align: center; margin: 18px 0 8px; }
+  .result-title { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
+  .result-score { margin: 10px 0 26px; text-align: center; }
+  .result-score .big { font-size: 44px; font-weight: 700; color: var(--accent); }
+  .result-score .sub { color: var(--muted); font-size: 13px; }
+  .wrong-list { margin-bottom: 26px; }
+  .wrong-title { color: var(--muted); font-size: 13px; margin: 0 0 10px; }
+  .wrong-item {
+    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--bad);
+    border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; font-size: 13.5px;
+  }
+  .wrong-item .wb { color: var(--muted); }
+  .wrong-item .ans-bad { color: var(--bad); font-weight: 600; }
+  .wrong-item .ans-good { color: var(--good); font-weight: 600; }
+  .result-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .result-btns .primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%);
+    background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 8px; padding: 9px 18px; font-size: 13.5px;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .toast.show { opacity: 1; }
+
+  @media (max-width: 560px) {
+    .stack-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .stack-toggles { justify-content: flex-start; }
+    .q-card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+
+  <!-- 首页：选题 -->
+  <section id="home">
+    <header class="home-head">
+      <h1 class="home-title">通信原理 · 作业题库</h1>
+      <div class="home-sub">雨课堂题库导出 · 共 <span id="totalCount" class="mono"></span> 题 · 进度保存在本机</div>
+      <div class="home-sub">题库内容来自课程 · 禁止营利性使用</div>
+      <div class="home-sub">
+        用户：
+        <input class="user-input" id="userNameInput" placeholder="输入名字，进度互不影响" autocomplete="off">
+        <button class="back-btn" id="switchUserBtn">确定</button>
+      </div>
+      <div class="home-sub hidden" id="identChoices"></div>
+    </header>
+
+    <div class="stack" id="stack"></div>
+
+    <div class="mode-row">
+      <div class="mode-pick" id="modePick">
+        <button data-mode="seq" class="on">顺序</button>
+        <button data-mode="rand">随机</button>
+      </div>
+      <div class="mode-pick" id="qmodePick">
+        <button data-qmode="practice" class="on">练习</button>
+        <button data-qmode="test">测试</button>
+      </div>
+      <button class="chip" id="optShuffleBtn" aria-pressed="false">选项乱序</button>
+      <div class="pick-count">已选 <b id="pickCount" class="mono">0</b> 题</div>
+    </div>
+
+    <div class="mode-row hidden" id="drawRow">
+      <div class="draw-label">随机抽题</div>
+      <input class="fill-input draw-input mono" id="drawCount" type="number" min="1" value="10">
+      <div class="draw-label">道</div>
+      <button class="start-btn draw-btn" id="drawBtn">抽题测试</button>
+    </div>
+
+    <div class="start-row">
+      <button class="start-btn" id="startBtn" disabled><span class="led"></span>开始练习</button>
+      <button class="wrong-btn" id="wrongBookBtn">错题本 <b id="wrongCount" class="mono"></b></button>
+    </div>
+  </section>
+
+  <!-- 逐题选择页 -->
+  <section id="picker" class="hidden">
+    <div class="quiz-top">
+      <button class="back-btn" id="pickerBackBtn">← 返回</button>
+      <div class="quiz-meta" id="pickerTitle"></div>
+      <button class="back-btn" id="pickerToggleBtn">全选</button>
+    </div>
+    <div class="pick-list" id="pickList"></div>
+    <div class="start-row picker-foot">
+      <button class="start-btn" id="pickerDoneBtn"><span class="led"></span>完成选择</button>
+    </div>
+  </section>
+
+  <!-- 答题页 -->
+  <section id="quiz" class="hidden">
+    <div class="quiz-top">
+      <button class="back-btn" id="backBtn">← 返回选题</button>
+      <div class="quiz-meta" id="quizMeta"></div>
+      <div class="quiz-count"><b id="quizPos" class="mono"></b></div>
+    </div>
+    <div class="bar-track"><div class="bar-fill" id="barFill"></div></div>
+    <div class="q-card">
+      <div class="q-index"><span class="mono" id="qNo"></span> · <span id="qType"></span></div>
+      <div class="q-body" id="qBody"></div>
+      <div id="opts"></div>
+      <div class="feedback hidden" id="feedback"></div>
+      <div class="next-row">
+        <button class="add-wrong-btn hidden" id="addWrongBtn">加入错题</button>
+        <button class="next-btn hidden" id="nextBtn">下一题</button>
+      </div>
+      <div class="key-hint">键盘 1–6 选答 · 回车下一题</div>
+    </div>
+  </section>
+
+  <!-- 结果页 -->
+  <section id="result" class="hidden">
+    <div class="result-head"><div class="result-title" id="resultTitle"></div></div>
+    <div class="result-score">
+      <div class="big mono" id="resultPct"></div>
+      <div class="sub" id="resultSub"></div>
+    </div>
+    <div class="wrong-list hidden" id="wrongListWrap">
+      <p class="wrong-title">错题回顾</p>
+      <div id="wrongList"></div>
+    </div>
+    <div class="result-btns">
+      <button class="primary" id="againBtn">再练一遍</button>
+      <button id="onlyWrongBtn">只练错题</button>
+      <button id="homeBtn">返回选题</button>
+    </div>
+  </section>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = [{"sheet": "作业一", "index": 1, "type": "单选题", "body": "通信系统最根本的目的是()", "options": [{"key": "A", "text": "产生信号", "images": []}, {"key": "B", "text": "传输信息", "images": []}, {"key": "C", "text": "放大信号功率", "images": []}, {"key": "D", "text": "滤除噪声", "images": []}], "answer": "B", "explain": "通信系统最根本的目的是传输信息。", "images": []}, {"sheet": "作业一", "index": 2, "type": "单选题", "body": "以下不属于通信系统主要性能指标的是()", "options": [{"key": "A", "text": "有效性", "images": []}, {"key": "B", "text": "可靠性", "images": []}, {"key": "C", "text": "安全性", "images": []}], "answer": "C", "explain": "通信系统主要性能指标是有效性与可靠性，安全性不属于主要性能指标。", "images": []}, {"sheet": "作业一", "index": 3, "type": "单选题", "body": "离散信源某符号出现概率为P=1/8,该符号携带的自信息量为()bit", "options": [{"key": "A", "text": "1", "images": []}, {"key": "B", "text": "2", "images": []}, {"key": "C", "text": "3", "images": []}, {"key": "D", "text": "8", "images": []}], "answer": "C", "explain": "自信息量 I=−log₂(1/8)=3 bit。", "images": []}, {"sheet": "作业一", "index": 4, "type": "单选题", "body": "衡量数字通信系统有效性的指标是()", "options": [{"key": "A", "text": "误码率", "images": []}, {"key": "B", "text": "码元速率、信息速率", "images": []}, {"key": "C", "text": "信噪比", "images": []}, {"key": "D", "text": "频带利用率", "images": []}], "answer": "D", "explain": "数字通信系统有效性指标是频带利用率（传输速率）。", "images": []}, {"sheet": "作业一", "index": 5, "type": "单选题", "body": "衡量数字通信系统可靠性的指标是()", "options": [{"key": "A", "text": "频带利用率", "images": []}, {"key": "B", "text": "信息速率", "images": []}, {"key": "C", "text": "误码率、误信率", "images": []}, {"key": "D", "text": "码元速率", "images": []}], "answer": "C", "explain": "数字通信系统可靠性指标是误码率、误信率。", "images": []}, {"sheet": "作业一", "index": 6, "type": "单选题", "body": "某离散符号出现概率P=1/2,其自信息量为()bit", "options": [{"key": "A", "text": "0.5", "images": []}, {"key": "B", "text": "1", "images": []}, {"key": "C", "text": "2", "images": []}, {"key": "D", "text": "4", "images": []}], "answer": "B", "explain": "自信息量 I=−log₂(1/2)=1 bit。", "images": []}, {"sheet": "作业一", "index": 7, "type": "单选题", "body": "关于码元速率R_B与信息速率R_b,下面说法正确的是()", "options": [{"key": "A", "text": "码元速率一定大于等于信息速率", "images": []}, {"key": "B", "text": "码元速率单位是 bit/s", "images": []}, {"key": "C", "text": "四进制信号,每个码元携带 2bit 信息", "images": []}, {"key": "D", "text": "二者单位相同", "images": []}], "answer": "C", "explain": "四进制信号每码元携带 log₂4=2 bit 信息；码元速率单位是 Baud。", "images": []}, {"sheet": "作业一", "index": 8, "type": "单选题", "body": "若事件发生概率越小,则该事件对应的自信息量()", "options": [{"key": "A", "text": "越小", "images": []}, {"key": "B", "text": "越大", "images": []}, {"key": "C", "text": "不变", "images": []}, {"key": "D", "text": "无法确定", "images": []}], "answer": "B", "explain": "事件发生概率越小，自信息量越大。", "images": []}, {"sheet": "作业二", "index": 1, "type": "单选题", "body": "广义平稳随机过程需要满足的条件,下列说法正确的是()", "options": [{"key": "A", "text": "均值随时间变化,自相关函数只和时间起点有关", "images": []}, {"key": "B", "text": "均值为常数,自相关函数仅与时间间隔tau=t2-t1有关", "images": []}, {"key": "C", "text": "均值为常数,自相关函数与t1、t2都有关", "images": []}, {"key": "D", "text": "任意 n 维分布不随时间平移而变化,是广义平稳", "images": []}], "answer": "B", "explain": "广义平稳：均值为常数，自相关函数仅与时间间隔 τ=t₂−t₁ 有关。", "images": []}, {"sheet": "作业二", "index": 2, "type": "单选题", "body": "零均值高斯平稳随机过程,一维概率密度函数表达式,若方差为\\(\\sigma^2\\),下面正确的是()", "options": [{"key": "A", "text": "\\(f(x)=\\frac{1}{\\sqrt{2\\pi}\\sigma}\\exp\\left(-\\frac{x^2}{2\\sigma^2}\\right)\\)", "images": []}, {"key": "B", "text": "\\(f(x)=\\frac{1}{2\\pi\\sigma}\\exp\\left(-\\frac{x^2}{\\sigma^2}\\right)\\)", "images": []}, {"key": "C", "text": "\\(f(x)=\\frac{1}{\\sqrt{2\\pi}}\\exp\\left(-\\frac{x^2}{2\\sigma^2}\\right)\\)", "images": []}, {"key": "D", "text": "\\(f(x)=\\frac{1}{\\sqrt{2\\pi}\\sigma}\\exp\\left(-\\frac{x}{2\\sigma^2}\\right)\\)", "images": []}], "answer": "A", "explain": "零均值高斯一维概率密度为 f(x)=1/(√(2π)σ)·exp(−x²/2σ²)。", "images": []}, {"sheet": "作业二", "index": 3, "type": "单选题", "body": "窄带随机过程的表达式\\(X(t)=A()\\cos\\left[\\omega_c t+\\varphi()\\right]\\),其中说法错误的是()", "options": [{"key": "A", "text": "\\(A(t)\\)为随机包络", "images": []}, {"key": "B", "text": "\\(\\varphi(t)\\)为随机相位", "images": []}, {"key": "C", "text": "\\(A(t)\\)和\\(\\varphi(t)\\)变化速度远快于载波\\(\\cos\\omega_c t\\)", "images": []}, {"key": "D", "text": "载波角频率\\(\\omega_c\\)远大于信号最高频率分量", "images": []}], "answer": "C", "explain": "窄带随机过程中 A(t)、φ(t) 变化速度应远慢于载波。C 说法错误。", "images": []}, {"sheet": "作业二", "index": 4, "type": "单选题", "body": "关于高斯白噪声,下列描述正确的是()", "options": [{"key": "A", "text": "幅度服从均匀分布,功率谱密度在全频域为常数", "images": []}, {"key": "B", "text": "幅度服从高斯分布,功率谱密度在全频域为常数", "images": []}, {"key": "C", "text": "自相关函数为冲激函数,幅度服从均匀分布", "images": []}, {"key": "D", "text": "功率谱随频率线性增大,幅度是高斯分布", "images": []}], "answer": "B", "explain": "高斯白噪声：幅度服从高斯分布，功率谱密度在全频域为常数。", "images": []}, {"sheet": "作业二", "index": 5, "type": "单选题", "body": "狭义平稳随机过程也称为严平稳,其定义为()", "options": [{"key": "A", "text": "一维概率密度不随时间平移改变", "images": []}, {"key": "B", "text": "任意 n 维概率密度函数,仅和时间间隔有关,与时间起点无关", "images": []}, {"key": "C", "text": "均值恒定,自相关函数只和\\(\\tau\\)有关", "images": []}, {"key": "D", "text": "功率谱为常数", "images": []}], "answer": "B", "explain": "严平稳：任意 n 维概率密度函数与时间起点无关，仅与时间间隔有关。", "images": []}, {"sheet": "作业二", "index": 6, "type": "单选题", "body": "零均值窄带高斯平稳随机过程,包络\\(A(t)\\)服从什么分布()", "options": [{"key": "A", "text": "高斯分布", "images": []}, {"key": "B", "text": "瑞利分布", "images": []}, {"key": "C", "text": "均匀分布", "images": []}, {"key": "D", "text": "泊松分布", "images": []}], "answer": "B", "explain": "零均值窄带高斯平稳随机过程的包络服从瑞利分布。", "images": []}, {"sheet": "作业二", "index": 7, "type": "单选题", "body": "窄带高斯噪声的随机相位\\(\\varphi(t)\\)在\\([0,2\\pi)\\)区间服从()", "options": [{"key": "A", "text": "高斯分布", "images": []}, {"key": "B", "text": "瑞利分布", "images": []}, {"key": "C", "text": "均匀分布", "images": []}, {"key": "D", "text": "指数分布", "images": []}], "answer": "C", "explain": "窄带高斯噪声的随机相位在 [0,2π) 上服从均匀分布。", "images": []}, {"sheet": "作业二", "index": 8, "type": "单选题", "body": "对于高斯随机过程,下面结论正确的是()", "options": [{"key": "A", "text": "广义平稳不一定严平稳", "images": []}, {"key": "B", "text": "广义平稳的高斯过程一定是严平稳", "images": []}, {"key": "C", "text": "高斯过程的一维分布一定是瑞利分布", "images": []}, {"key": "D", "text": "高斯过程自相关函数与时间间隔无关", "images": []}], "answer": "B", "explain": "高斯随机过程只要广义平稳就一定严平稳。", "images": []}, {"sheet": "作业三", "index": 1, "type": "单选题", "body": "下列属于**线性调制**的是()", "options": [{"key": "A", "text": "FM", "images": []}, {"key": "B", "text": "PM", "images": []}, {"key": "C", "text": "DSB", "images": []}, {"key": "D", "text": "以上都不是", "images": []}], "answer": "C", "explain": "DSB 是线性调制；FM、PM 属于角度（非线性）调制。", "images": []}, {"sheet": "作业三", "index": 2, "type": "单选题", "body": "AM 信号在大信噪比条件下,制度增益最大值为()", "options": [{"key": "A", "text": "2/3", "images": []}, {"key": "B", "text": "1", "images": []}, {"key": "C", "text": "2", "images": []}, {"key": "D", "text": "1/2", "images": []}], "answer": "A", "explain": "AM 大信噪比下制度增益最大值 2/3（100% 调制时）。", "images": []}, {"sheet": "作业三", "index": 3, "type": "单选题", "body": "DSB 调制相比 AM 调制的主要优点是()", "options": [{"key": "A", "text": "接收机结构简单,不需要同步载波", "images": []}, {"key": "B", "text": "不发射载波,功率利用率更高", "images": []}, {"key": "C", "text": "带宽更小", "images": []}, {"key": "D", "text": "可以用包络检波解调", "images": []}], "answer": "B", "explain": "DSB 抑制载波，功率利用率高于 AM。", "images": []}, {"sheet": "作业三", "index": 4, "type": "单选题", "body": "SSB 单边带调制信号的带宽为(\\(_H\\)为基带信号最高频率)()", "options": [{"key": "A", "text": "\\(2f_H\\)", "images": []}, {"key": "B", "text": "\\(f_H\\)", "images": []}, {"key": "C", "text": "\\(4f_H\\)", "images": []}, {"key": "D", "text": "\\(f_H/2\\)", "images": []}], "answer": "B", "explain": "SSB 单边带调制信号带宽为 f_H。", "images": []}, {"sheet": "作业三", "index": 5, "type": "单选题", "body": "VSB 残留边带调制,适合用于哪类基带信号传输()", "options": [{"key": "A", "text": "含有直流分量和低频分量的信号(如电视图像信号)", "images": []}, {"key": "B", "text": "只有高频分量的语音信号", "images": []}, {"key": "C", "text": "直流为 0 的数字基带信号", "images": []}, {"key": "D", "text": "极窄带低速信号", "images": []}], "answer": "A", "explain": "VSB 适合传输含直流分量和低频分量的信号，如电视图像信号。", "images": []}, {"sheet": "作业三", "index": 6, "type": "单选题", "body": "关于 FM 调频与 PM 调相,说法正确的是()", "options": [{"key": "A", "text": "FM 是载波相位随基带信号线性变化", "images": []}, {"key": "B", "text": "PM 是载波频率随基带信号线性变化", "images": []}, {"key": "C", "text": "FM 是载波瞬时频率随基带信号线性变化", "images": []}, {"key": "D", "text": "FM 和 PM 都属于线性调制", "images": []}], "answer": "C", "explain": "FM 是载波瞬时频率随基带信号线性变化。", "images": []}, {"sheet": "作业三", "index": 7, "type": "单选题", "body": "下列关于线性调制系统制度增益,说法错误的是()", "options": [{"key": "A", "text": "DSB 制度增益\\(G=2\\)", "images": []}, {"key": "B", "text": "SSB 制度增益\\(G=1\\)", "images": []}, {"key": "C", "text": "AM(100% 调制)最大制度增益\\(G=2/3\\)", "images": []}, {"key": "D", "text": "VSB 制度增益一定大于 DSB", "images": []}], "answer": "D", "explain": "VSB 制度增益介于 AM 与 DSB 之间，不会一定大于 DSB。D 说法错误。", "images": []}, {"sheet": "作业三", "index": 8, "type": "单选题", "body": "频分复用(FDM)的基本原理是()", "options": [{"key": "A", "text": "在不同时隙传输多路信号", "images": []}, {"key": "B", "text": "将各路信号调制到不同载波频率,在同一时间内占用不同频带传输", "images": []}, {"key": "C", "text": "利用不同正交码区分各路信号", "images": []}, {"key": "D", "text": "在同一频率不同偏振方向传输信号", "images": []}], "answer": "B", "explain": "FDM 将各路信号调制到不同载波频率，同时占用不同频带传输。", "images": []}, {"sheet": "作业三", "index": 9, "type": "单选题", "body": "关于 SSB 调制解调,正确的是()", "options": [{"key": "A", "text": "可直接包络检波解调", "images": []}, {"key": "B", "text": "需要相干解调,节省带宽", "images": []}, {"key": "C", "text": "发送大功率载波,功率利用率低", "images": []}, {"key": "D", "text": "带宽等于 2 倍基带最高频率", "images": []}], "answer": "B", "explain": "SSB 需要相干解调，优点是节省带宽。", "images": []}, {"sheet": "作业三", "index": 10, "type": "单选题", "body": "关于 VSB 残留边带,正确描述是()", "options": [{"key": "A", "text": "完全抑制一个边带", "images": []}, {"key": "B", "text": "保留一个完整边带和另一个边带的一小部分", "images": []}, {"key": "C", "text": "带宽为基带最高频率", "images": []}, {"key": "D", "text": "属于非线性调制", "images": []}], "answer": "B", "explain": "VSB 保留一个完整边带和另一个边带的一小部分。", "images": []}, {"sheet": "作业四", "index": 1, "type": "单选题", "body": "数字基带传输系统中,不属于基带传输系统组成模块的是()", "options": [{"key": "A", "text": "发送滤波器", "images": []}, {"key": "B", "text": "信道", "images": []}, {"key": "C", "text": "载波调制器", "images": []}, {"key": "D", "text": "接收滤波器", "images": []}], "answer": "C", "explain": "数字基带传输系统不含载波调制器。", "images": []}, {"sheet": "作业四", "index": 2, "type": "单选题", "body": "数字基带信号的频谱特点,下列说法正确的是()", "options": [{"key": "A", "text": "只存在连续谱,无离散谱", "images": []}, {"key": "B", "text": "只存在离散谱,无连续谱", "images": []}, {"key": "C", "text": "一般包含连续谱,部分码型存在离散谱", "images": []}, {"key": "D", "text": "连续谱用于提取位同步时钟", "images": []}], "answer": "C", "explain": "数字基带信号一般包含连续谱，部分码型存在离散谱。", "images": []}, {"sheet": "作业四", "index": 3, "type": "单选题", "body": "基带传输无码间串扰的时域条件是(设码元周期为\\(T_s\\))()", "options": [{"key": "A", "text": "\\(h(kT_s)=1,k=0\\);\\(h(kT_s)=0,k\\neq0\\)", "images": []}, {"key": "B", "text": "\\(h(kT_s)=0,k=0\\);\\(h(kT_s)=1,k\\neq0\\)", "images": []}, {"key": "C", "text": "\\(h(t)\\)为矩形脉冲即可", "images": []}, {"key": "D", "text": "\\(H(\\omega)\\)任意", "images": []}], "answer": "A", "explain": "无码间串扰时域条件：h(kT_s)=1（k=0），h(kT_s)=0（k≠0）。", "images": []}, {"sheet": "作业四", "index": 4, "type": "单选题", "body": "奈奎斯特第一准则,理想低通无码间串扰基带系统,最高频带利用率为()", "options": [{"key": "A", "text": "\\(1\\ \\text{bit/(s·Hz)}\\)", "images": []}, {"key": "B", "text": "\\(2\\ \\text{bit/(s·Hz)}\\)", "images": []}, {"key": "C", "text": "\\(0.5\\ \\text{bit/(s·Hz)}\\)", "images": []}, {"key": "D", "text": "\\(4\\ \\text{bit/(s·Hz)}\\)", "images": []}], "answer": "B", "explain": "理想低通基带系统最高频带利用率 2 bit/(s·Hz)。", "images": []}, {"sheet": "作业四", "index": 5, "type": "单选题", "body": "关于升余弦滚降滤波器,说法错误的是()", "options": [{"key": "A", "text": "滚降系数\\(\\alpha\\)越大,频带利用率越低", "images": []}, {"key": "B", "text": "\\(\\alpha=0\\)对应理想低通特性", "images": []}, {"key": "C", "text": "滚降会使拖尾衰减变慢", "images": []}, {"key": "D", "text": "可以减小定时误差带来的码间串扰", "images": []}], "answer": "C", "explain": "滚降系数越大拖尾衰减越快。C 说法错误。", "images": []}, {"sheet": "作业四", "index": 6, "type": "单选题", "body": "部分响应技术的主要目的是()", "options": [{"key": "A", "text": "彻底消除码间串扰,同时实现 2Baud/Hz 的频带利用率", "images": []}, {"key": "B", "text": "引入可控码间串扰,压缩频带、加快拖尾衰减", "images": []}, {"key": "C", "text": "完全消除噪声影响", "images": []}, {"key": "D", "text": "提高信号功率", "images": []}], "answer": "B", "explain": "部分响应引入可控码间串扰，压缩频带、加快拖尾衰减。", "images": []}, {"sheet": "作业四", "index": 7, "type": "单选题", "body": "第一类部分响应(双极性),相关编码前输入码元为\\(\\{a_k\\}\\),相关编码输出\\(c_k\\)为()", "options": [{"key": "A", "text": "\\(c_k=a_k+a_{k-1}\\)", "images": []}, {"key": "B", "text": "\\(c_k=a_k-a_{k-1}\\)", "images": []}, {"key": "C", "text": "\\(c_k=a_k\\)", "images": []}, {"key": "D", "text": "\\(c_k=a_k+2a_{k-1}\\)", "images": []}], "answer": "A", "explain": "第一类部分响应相关编码输出 c_k=a_k+a_{k−1}。", "images": []}, {"sheet": "作业四", "index": 8, "type": "单选题", "body": "数字基带码型中,不含直流分量,便于提取同步信息的是()", "options": [{"key": "A", "text": "单极性不归零码(NRZ)", "images": []}, {"key": "B", "text": "双极性不归零码", "images": []}, {"key": "C", "text": "单极性归零码", "images": []}, {"key": "D", "text": "矩形单极性码", "images": []}], "answer": "B", "explain": "双极性不归零码不含直流分量，便于提取同步信息。", "images": []}, {"sheet": "作业四", "index": 9, "type": "单选题", "body": "奈奎斯特第一准则频域条件:若系统传输函数\\(H(\\omega)\\)沿\\(\\omega\\)轴平移\\(\\frac{2\\pi}{T_s}\\)后叠加为常数,则该系统()", "options": [{"key": "A", "text": "一定存在码间串扰", "images": []}, {"key": "B", "text": "满足无码间串扰条件", "images": []}, {"key": "C", "text": "仅在大信噪比无码间串扰", "images": []}, {"key": "D", "text": "仅适用于模拟信号传输", "images": []}], "answer": "B", "explain": "传输函数平移叠加为常数即满足奈奎斯特第一准则，无码间串扰。", "images": []}, {"sheet": "作业四", "index": 10, "type": "单选题", "body": "关于部分响应系统预编码,说法正确的是()", "options": [{"key": "A", "text": "预编码作用是消除噪声", "images": []}, {"key": "B", "text": "预编码用来解决相关编码带来的差错传播问题", "images": []}, {"key": "C", "text": "预编码会增大信号带宽一倍", "images": []}, {"key": "D", "text": "预编码只能用于单极性码", "images": []}], "answer": "B", "explain": "预编码用来解决相关编码带来的差错传播问题。", "images": []}, {"sheet": "作业五", "index": 1, "type": "单选题", "body": "数字频带传输系统相比数字基带传输系统,增加的核心模块是()", "options": [{"key": "A", "text": "发送滤波器", "images": []}, {"key": "B", "text": "调制器与解调器", "images": []}, {"key": "C", "text": "抽样判决器", "images": []}, {"key": "D", "text": "码元再生电路", "images": []}], "answer": "B", "explain": "数字频带传输比基带传输增加调制器与解调器。", "images": []}, {"sheet": "作业五", "index": 2, "type": "单选题", "body": "2ASK 信号的频谱,下列描述正确的是()", "options": [{"key": "A", "text": "频谱位于基带,不需要载波", "images": []}, {"key": "B", "text": "是基带信号频谱搬移到载波频率两侧,带宽等于 2 倍基带码元速率", "images": []}, {"key": "C", "text": "没有离散载波分量", "images": []}, {"key": "D", "text": "带宽等于码元速率", "images": []}], "answer": "B", "explain": "2ASK 频谱是基带频谱搬移到载波两侧，带宽等于 2 倍码元速率。", "images": []}, {"sheet": "作业五", "index": 3, "type": "单选题", "body": "在相同信噪比条件下,下列二进制调制方式误码率最低的是()", "options": [{"key": "A", "text": "2ASK", "images": []}, {"key": "B", "text": "2FSK", "images": []}, {"key": "C", "text": "2PSK", "images": []}, {"key": "D", "text": "三者相同", "images": []}], "answer": "C", "explain": "相同信噪比下 2PSK 误码率最低。", "images": []}, {"sheet": "作业五", "index": 4, "type": "单选题", "body": "关于 2PSK 调制的缺点,说法正确的是()", "options": [{"key": "A", "text": "抗噪声性能最差", "images": []}, {"key": "B", "text": "存在相位模糊(倒 π)问题", "images": []}, {"key": "C", "text": "带宽远大于 2FSK", "images": []}, {"key": "D", "text": "不需要相干解调", "images": []}], "answer": "B", "explain": "2PSK 的缺点是存在相位模糊（倒 π）问题。", "images": []}, {"sheet": "作业五", "index": 5, "type": "单选题", "body": "2FSK 信号的解调方式不包括()", "options": [{"key": "A", "text": "相干解调", "images": []}, {"key": "B", "text": "包络检波解调", "images": []}, {"key": "C", "text": "过零检测法", "images": []}, {"key": "D", "text": "差分译码解调", "images": []}], "answer": "D", "explain": "2FSK 解调方式：相干解调、包络检波、过零检测；差分译码不属于 2FSK 解调。", "images": []}, {"sheet": "作业五", "index": 6, "type": "单选题", "body": "为了解决 2PSK 相位模糊问题,工程上一般采用下面哪种调制()", "options": [{"key": "A", "text": "2ASK", "images": []}, {"key": "B", "text": "2DPSK", "images": []}, {"key": "C", "text": "单极性 NRZ", "images": []}, {"key": "D", "text": "升余弦基带传输", "images": []}], "answer": "B", "explain": "工程上用 2DPSK 解决 2PSK 相位模糊问题。", "images": []}, {"sheet": "作业五", "index": 7, "type": "单选题", "body": "相同码元速率下,2ASK、2PSK、2DPSK 这三种调制信号,信号带宽关系为()", "options": [{"key": "A", "text": "\\(B_{2ASK}>B_{2PSK}\\)", "images": []}, {"key": "B", "text": "\\(B_{2ASK}<b_{2psk}\\)<>", "images": []}, {"key": "C", "text": "\\(B_{2ASK}=B_{2PSK}=2R_s\\)", "images": []}, {"key": "D", "text": "\\(B_{2DPSK}\\)远小于 2ASK", "images": []}], "answer": "C", "explain": "相同码元速率下 2ASK、2PSK、2DPSK 带宽相等：B=2R_s。", "images": []}, {"sheet": "作业五", "index": 8, "type": "单选题", "body": "多进制数字调制 MPSK,当 M 增大时,在相同信噪比下,会出现()", "options": [{"key": "A", "text": "频带利用率提升,抗噪声性能下降", "images": []}, {"key": "B", "text": "频带利用率提升,抗噪声性能提升", "images": []}, {"key": "C", "text": "频带利用率下降,抗噪声性能下降", "images": []}, {"key": "D", "text": "频带利用率下降,抗噪声性能提升", "images": []}], "answer": "A", "explain": "M 增大时 MPSK 频带利用率提升，抗噪声性能下降。", "images": []}, {"sheet": "作业五", "index": 9, "type": "单选题", "body": "下列调制适合中低速、不需要同步载波、信道衰落变化较大场景的是()", "options": [{"key": "A", "text": "2ASK", "images": []}, {"key": "B", "text": "包络解调 2FSK", "images": []}, {"key": "C", "text": "2PSK", "images": []}, {"key": "D", "text": "QPSK", "images": []}], "answer": "B", "explain": "包络解调 2FSK 适合中低速、不需要同步载波、信道衰落变化大的场景。", "images": []}, {"sheet": "作业五", "index": 10, "type": "单选题", "body": "QPSK 属于四进制相移键控,每个码元携带信息比特数为()", "options": [{"key": "A", "text": "1 bit", "images": []}, {"key": "B", "text": "2 bit", "images": []}, {"key": "C", "text": "3 bit", "images": []}, {"key": "D", "text": "4 bit", "images": []}], "answer": "B", "explain": "QPSK 是四进制调制，每码元携带 2 bit。", "images": []}, {"sheet": "作业六", "index": 1, "type": "单选题", "body": "在加性高斯白噪声信道下,最佳接收机的判决准则是()", "options": [{"key": "A", "text": "最大幅值准则", "images": []}, {"key": "B", "text": "最小均方误差准则", "images": []}, {"key": "C", "text": "最大似然准则", "images": []}, {"key": "D", "text": "最大功率准则", "images": []}], "answer": "C", "explain": "AWGN 信道下最佳接收机的判决准则是最大似然准则。", "images": []}, {"sheet": "作业六", "index": 2, "type": "单选题", "body": "加性高斯白噪声信道中,二进制数字信号最佳接收机有两种实现结构,分别是()", "options": [{"key": "A", "text": "低通滤波器、高通滤波器", "images": []}, {"key": "B", "text": "相关接收机、匹配滤波器接收机", "images": []}, {"key": "C", "text": "包络检波器、相干解调器", "images": []}, {"key": "D", "text": "升余弦滤波器、抽样判决器", "images": []}], "answer": "B", "explain": "最佳接收机两种结构：相关接收机、匹配滤波器接收机。", "images": []}, {"sheet": "作业六", "index": 3, "type": "单选题", "body": "匹配滤波器的核心设计目标是()", "options": [{"key": "A", "text": "在任意时刻输出信噪比最大", "images": []}, {"key": "B", "text": "在码元抽样时刻,使输出信噪比达到最大值", "images": []}, {"key": "C", "text": "滤除全部噪声,消除码间串扰", "images": []}, {"key": "D", "text": "改变信号码元波形", "images": []}], "answer": "B", "explain": "匹配滤波器目标是在码元抽样时刻使输出信噪比最大。", "images": []}, {"sheet": "作业六", "index": 4, "type": "单选题", "body": "匹配滤波器的冲激响应\\(h(t)\\)与输入信号\\(s(t)\\)的关系为\\(T_s\\)为码元持续时间)()", "options": [{"key": "A", "text": "\\(h(t)=s(t)\\)", "images": []}, {"key": "B", "text": "\\(h(t)=s(T_s-t)\\)", "images": []}, {"key": "C", "text": "\\(h(t)=s(t-T_s)\\)", "images": []}, {"key": "D", "text": "\\(h(t)=s(t+T_s)\\)", "images": []}], "answer": "B", "explain": "匹配滤波器冲激响应 h(t)=s(T_s−t)。", "images": []}, {"sheet": "作业六", "index": 5, "type": "单选题", "body": "对于相同信号、相同高斯白噪声,最佳接收机和普通相干解调的实际接收机相比()", "options": [{"key": "A", "text": "最佳接收机误码率一定更大", "images": []}, {"key": "B", "text": "最佳接收机误码性能优于实际接收机(实际接收机存在滤波器非匹配损耗)", "images": []}, {"key": "C", "text": "二者性能永远完全相等", "images": []}, {"key": "D", "text": "实际接收机信噪比增益更高", "images": []}], "answer": "B", "explain": "最佳接收机误码性能优于实际接收机，因实际接收机存在滤波器非匹配损耗。", "images": []}, {"sheet": "作业六", "index": 6, "type": "单选题", "body": "相关接收机内部,不包含下面哪个模块()", "options": [{"key": "A", "text": "本地信号副本", "images": []}, {"key": "B", "text": "乘法器", "images": []}, {"key": "C", "text": "积分器", "images": []}, {"key": "D", "text": "载波调制器", "images": []}], "answer": "D", "explain": "相关接收机包含本地信号副本、乘法器、积分器，不含载波调制器。", "images": []}, {"sheet": "作业六", "index": 7, "type": "单选题", "body": "在加性高斯白噪声信道,匹配滤波器输出最大信噪比的值取决于()", "options": [{"key": "A", "text": "信号波形形状", "images": []}, {"key": "B", "text": "信号的码元能量E和噪声单边功率谱密度\\(n_0\\)", "images": []}, {"key": "C", "text": "载波频率", "images": []}, {"key": "D", "text": "码元速率", "images": []}], "answer": "B", "explain": "匹配滤波器最大输出信噪比取决于码元能量 E 和噪声单边功率谱密度 n₀。", "images": []}, {"sheet": "作业六", "index": 8, "type": "单选题", "body": "下面说法关于最佳接收机误码率,正确的是()", "options": [{"key": "A", "text": "只和信号带宽有关,和码元能量无关", "images": []}, {"key": "B", "text": "只和码元能量与噪声功率谱密度比值\\(E/n_0\\)有关", "images": []}, {"key": "C", "text": "与基带码型无关,只和载波频率有关", "images": []}, {"key": "D", "text": "随码元周期增大而单调减小", "images": []}], "answer": "B", "explain": "最佳接收机误码率只与 E/n₀ 有关。", "images": []}, {"sheet": "作业六", "index": 9, "type": "单选题", "body": "关于实际接收机性能下降的原因,错误的是()", "options": [{"key": "A", "text": "接收滤波器不是严格匹配滤波器", "images": []}, {"key": "B", "text": "存在定时误差、相位误差", "images": []}, {"key": "C", "text": "信道存在畸变", "images": []}, {"key": "D", "text": "最佳接收机存在相位模糊问题,实际接收机没有", "images": []}], "answer": "D", "explain": "相位模糊是相干 PSK 的问题，不是最佳接收机的问题。D 说法错误。", "images": []}, {"sheet": "作业六", "index": 10, "type": "单选题", "body": "二进制等能量、等先验概率信号,采用匹配滤波器构成的最佳接收机,判决门限由什么决定()", "options": [{"key": "A", "text": "信号幅度", "images": []}, {"key": "B", "text": "信号能量、先验概率,等先验时门限为两信号中点", "images": []}, {"key": "C", "text": "噪声的功率谱密度", "images": []}, {"key": "D", "text": "载波频率", "images": []}], "answer": "B", "explain": "等先验、等能量时判决门限为两信号中点。", "images": []}, {"sheet": "作业七", "index": 1, "type": "单选题", "body": "低通抽样定理:若信号最高频率为\\(_H\\),为无失真恢复原信号,抽样频率\\(_s\\)应满足()", "options": [{"key": "A", "text": "\\(f_s<2f_h\\)<>", "images": []}, {"key": "B", "text": "\\(f_s\\ge 2f_H\\)", "images": []}, {"key": "C", "text": "\\(f_s=f_H\\)", "images": []}, {"key": "D", "text": "\\(f_s\\le f_H\\)", "images": []}], "answer": "B", "explain": "低通抽样定理：f_s≥2f_H。", "images": []}, {"sheet": "作业七", "index": 2, "type": "单选题", "body": "关于均匀量化,下面说法正确的是()", "options": [{"key": "A", "text": "大信号量化信噪比高,小信号量化信噪比差", "images": []}, {"key": "B", "text": "大小信号量化信噪比一致", "images": []}, {"key": "C", "text": "量化间隔随信号幅值变化", "images": []}, {"key": "D", "text": "不需要编码", "images": []}], "answer": "A", "explain": "均匀量化：大信号量化信噪比高，小信号量化信噪比差。", "images": []}, {"sheet": "作业七", "index": 3, "type": "单选题", "body": "非均匀量化的主要目的是()", "options": [{"key": "A", "text": "降低抽样速率", "images": []}, {"key": "B", "text": "改善小信号的量化信噪比", "images": []}, {"key": "C", "text": "减少编码位数", "images": []}, {"key": "D", "text": "消除码间串扰", "images": []}], "answer": "B", "explain": "非均匀量化目的是改善小信号的量化信噪比。", "images": []}, {"sheet": "作业七", "index": 4, "type": "单选题", "body": "A 律 13 折线是我国 PCM 数字电话采用的压扩特性,对应的压缩律为()", "options": [{"key": "A", "text": "\\(\\mu\\)律", "images": []}, {"key": "B", "text": "A 律,\\(A=87.6\\)", "images": []}, {"key": "C", "text": "A 律,\\(A=13\\)", "images": []}, {"key": "D", "text": "对数\\(\\mu=255\\)", "images": []}], "answer": "B", "explain": "我国 PCM 数字电话采用 A 律 13 折线，A=87.6。", "images": []}, {"sheet": "作业七", "index": 5, "type": "单选题", "body": "PCM 系统的完整流程顺序是()", "options": [{"key": "A", "text": "编码→抽样→量化", "images": []}, {"key": "B", "text": "抽样→量化→编码", "images": []}, {"key": "C", "text": "量化→抽样→编码", "images": []}, {"key": "D", "text": "抽样→编码→量化", "images": []}], "answer": "B", "explain": "PCM 流程顺序：抽样→量化→编码。", "images": []}, {"sheet": "作业七", "index": 6, "type": "单选题", "body": "A 律 13 折线中,折线段数量为 13 段,每一段的量化特性是()", "options": [{"key": "A", "text": "指数曲线", "images": []}, {"key": "B", "text": "直线段", "images": []}, {"key": "C", "text": "正弦曲线", "images": []}, {"key": "D", "text": "抛物线", "images": []}], "answer": "B", "explain": "A 律 13 折线每一段都是直线段。", "images": []}, {"sheet": "作业七", "index": 7, "type": "单选题", "body": "时分复用(TDM)的原理是()", "options": [{"key": "A", "text": "将各路信号调制到不同载波频率,共用同一频带", "images": []}, {"key": "B", "text": "各路信号占用不同时隙,在同一频带轮流传输", "images": []}, {"key": "C", "text": "使用正交码区分各路信号", "images": []}, {"key": "D", "text": "利用不同极化区分信号", "images": []}], "answer": "B", "explain": "TDM 各路信号占用不同时隙，在同一频带轮流传输。", "images": []}, {"sheet": "作业七", "index": 8, "type": "单选题", "body": "对于 PCM 30/32 路时分复用数字电话系统,一帧包含的时隙数为()", "options": [{"key": "A", "text": "30", "images": []}, {"key": "B", "text": "32", "images": []}, {"key": "C", "text": "64", "images": []}, {"key": "D", "text": "128", "images": []}], "answer": "B", "explain": "PCM 30/32 系统一帧包含 32 个时隙。", "images": []}, {"sheet": "作业七", "index": 9, "type": "单选题", "body": "量化噪声的来源是()", "options": [{"key": "A", "text": "信道高斯白噪声", "images": []}, {"key": "B", "text": "抽样带来的噪声", "images": []}, {"key": "C", "text": "把连续样值近似为有限离散电平产生的误差", "images": []}, {"key": "D", "text": "载波相位噪声", "images": []}], "answer": "C", "explain": "量化噪声来自把连续样值近似为有限离散电平产生的误差。", "images": []}, {"sheet": "作业七", "index": 10, "type": "单选题", "body": "关于 A 律 13 折线编码,一个样值编码后的码长为()", "options": [{"key": "A", "text": "4 bit", "images": []}, {"key": "B", "text": "8 bit", "images": []}, {"key": "C", "text": "16 bit", "images": []}, {"key": "D", "text": "32 bit", "images": []}], "answer": "B", "explain": "A 律 13 折线编码每个样值 8 bit。", "images": []}, {"sheet": "作业八", "index": 1, "type": "单选题", "body": "在差错控制方式中,接收端发现错误后,请求发送端重传,该方式称为()", "options": [{"key": "A", "text": "前向纠错 FEC", "images": []}, {"key": "B", "text": "检错重传 ARQ", "images": []}, {"key": "C", "text": "混合纠错 HEC", "images": []}, {"key": "D", "text": "信息反馈 IRQ", "images": []}], "answer": "B", "explain": "ARQ 检错重传：接收端发现错误后请求发送端重传。FEC 是前向纠错（接收端自行纠错），HEC 是混合纠错。", "images": []}, {"sheet": "作业八", "index": 2, "type": "单选题", "body": "已知某码组最小码距\\(d_{\\text{min}}=5\\),该码最多可以()", "options": [{"key": "A", "text": "检 2 位错,纠 1 位错", "images": []}, {"key": "B", "text": "检 4 位错,纠 2 位错", "images": []}, {"key": "C", "text": "检 1 位错,纠 4 位错", "images": []}, {"key": "D", "text": "检 3 位错,纠 2 位错", "images": []}], "answer": "B", "explain": "最小码距 d_min=5：最多检 d_min−1=4 位错；最多纠 (d_min−1)/2=2 位错。", "images": []}, {"sheet": "作业八", "index": 3, "type": "单选题", "body": "对于线性分组码,生成矩阵\\(\\boldsymbol{G}\\)和监督矩阵\\(\\boldsymbol{H}\\)满足的关系是()", "options": [{"key": "A", "text": "\\(\\boldsymbol{G}\\boldsymbol{H}^\\mathrm{T}=\\boldsymbol{0}\\)", "images": []}, {"key": "B", "text": "\\(\\boldsymbol{G}\\boldsymbol{H}=\\boldsymbol{I}\\)", "images": []}, {"key": "C", "text": "\\(\\boldsymbol{G}+\\boldsymbol{H}=\\boldsymbol{0}\\)", "images": []}, {"key": "D", "text": "\\(\\boldsymbol{G}^\\mathrm{T}\\boldsymbol{H}=\\boldsymbol{I}\\)", "images": []}], "answer": "A", "explain": "线性分组码的生成矩阵 G 与监督矩阵 H 满足 G·H^T=0。", "images": []}, {"sheet": "作业八", "index": 4, "type": "单选题", "body": "(7,4) 汉明码,下面说法正确的是()", "options": [{"key": "A", "text": "码长 7,信息位 4 位,监督位 3 位", "images": []}, {"key": "B", "text": "码长 4,信息位 7 位,监督位 3 位", "images": []}, {"key": "C", "text": "码长 7,信息位 3 位,监督位 4 位", "images": []}, {"key": "D", "text": "码长 7,信息位 4 位,监督位 7 位", "images": []}], "answer": "A", "explain": "(7,4) 汉明码：n=7 码长，k=4 信息位，监督位 r=n−k=3。", "images": []}, {"sheet": "作业八", "index": 5, "type": "单选题", "body": "线性分组码伴随式\\(\\boldsymbol{S}=\\boldsymbol{R}\\boldsymbol{H}^\\mathrm{T}\\),若接收码组无错,则伴随式\\(\\boldsymbol{S}\\)为()", "options": [{"key": "A", "text": "全 1 向量", "images": []}, {"key": "B", "text": "全 0 向量", "images": []}, {"key": "C", "text": "等于信息码", "images": []}, {"key": "D", "text": "等于监督码", "images": []}], "answer": "B", "explain": "伴随式 S=R·H^T，接收码组无错时 S=0，即全 0 向量。", "images": []}, {"sheet": "作业八", "index": 6, "type": "单选题", "body": "循环码的码多项式,除以生成多项式\\(g(x)\\),正确的是()", "options": [{"key": "A", "text": "余数不为 0", "images": []}, {"key": "B", "text": "余数一定为 0", "images": []}, {"key": "C", "text": "商等于接收多项式", "images": []}, {"key": "D", "text": "仅信息多项式可整除\\(g(x)\\)", "images": []}], "answer": "B", "explain": "循环码的每个码字都是生成多项式 g(x) 的倍式，除以 g(x) 余数必为 0。", "images": []}, {"sheet": "作业八", "index": 7, "type": "单选题", "body": "关于循环码编码,生成多项式\\(g(x)\\)的次数等于()", "options": [{"key": "A", "text": "信息位长度k", "images": []}, {"key": "B", "text": "监督位长度r", "images": []}, {"key": "C", "text": "码长n", "images": []}, {"key": "D", "text": "\\(n+k\\)", "images": []}], "answer": "B", "explain": "生成多项式 g(x) 的次数等于监督位长度 r=n−k。", "images": []}, {"sheet": "作业八", "index": 8, "type": "单选题", "body": "若一种码要求能纠正 2 个错码,则最小码距至少为()", "options": [{"key": "A", "text": "2", "images": []}, {"key": "B", "text": "3", "images": []}, {"key": "C", "text": "4", "images": []}, {"key": "D", "text": "5", "images": []}], "answer": "D", "explain": "纠 t 位错需要 d_min≥2t+1；纠 2 位错需要 d_min≥5。", "images": []}, {"sheet": "作业八", "index": 9, "type": "单选题", "body": "下面关于线性分组码的生成矩阵\\(\\boldsymbol{G}\\)描述错误的是()", "options": [{"key": "A", "text": "生成矩阵由k个线性无关的码行构成", "images": []}, {"key": "B", "text": "利用\\(\\boldsymbol{G}\\)可由信息码计算出完整码组", "images": []}, {"key": "C", "text": "典型生成矩阵形式为\\(\\boldsymbol{G}=\\left[\\boldsymbol{I}_k\\quad\\boldsymbol{Q}\\right]\\)", "images": []}, {"key": "D", "text": "生成矩阵行数等于码长n", "images": []}], "answer": "D", "explain": "生成矩阵 G 是 k 行 n 列，行数等于信息位长度 k，不等于码长 n。D 说法错误。", "images": []}, {"sheet": "作业八", "index": 10, "type": "单选题", "body": "循环码译码时,伴随多项式是接收码多项式除以\\(g(x)\\)得到的余式,伴随多项式为 0 代表()", "options": [{"key": "A", "text": "一定存在错误", "images": []}, {"key": "B", "text": "无错或者错码是该循环码的一个码组", "images": []}, {"key": "C", "text": "一定有 1 位错误", "images": []}, {"key": "D", "text": "只能纠正一位错", "images": []}], "answer": "B", "explain": "伴随式为 0 时，可能无错，也可能错误图样恰好是一个合法码组（该错误不可检出）。", "images": []}, {"sheet": "作业九", "index": 1, "type": "单选题", "body": "正交编码中,两个码组正交的定义是()", "options": [{"key": "A", "text": "互相关系数等于 1", "images": []}, {"key": "B", "text": "互相关系数等于 0", "images": []}, {"key": "C", "text": "自相关系数等于 0", "images": []}, {"key": "D", "text": "自相关系数等于 1", "images": []}], "answer": "B", "explain": "两个码组正交的定义是互相关系数等于 0。", "images": []}, {"sheet": "作业九", "index": 2, "type": "单选题", "body": "m 序列(最长线性反馈移位寄存器序列),产生 m 序列的移位寄存器级数为n,则序列周期长度P为()", "options": [{"key": "A", "text": "\\(P=n\\)", "images": []}, {"key": "B", "text": "\\(P=2^n\\)", "images": []}, {"key": "C", "text": "\\(P=2^n-1\\)", "images": []}, {"key": "D", "text": "\\(P=2^n+1\\)", "images": []}], "answer": "C", "explain": "n 级线性反馈移位寄存器产生的 m 序列周期 P=2^n−1。", "images": []}, {"sheet": "作业九", "index": 3, "type": "单选题", "body": "关于 m 序列自相关特性,下面描述正确的是()", "options": [{"key": "A", "text": "是理想冲激函数", "images": []}, {"key": "B", "text": "周期内,移位为 0 时自相关取最大值;移位不为 0 时自相关为负值", "images": []}, {"key": "C", "text": "自相关函数恒等于 0", "images": []}, {"key": "D", "text": "自相关函数随移位线性增大", "images": []}], "answer": "B", "explain": "m 序列具有二值自相关特性：移位为 0 时取最大值，移位不为 0 时为负值。", "images": []}, {"sheet": "作业九", "index": 4, "type": "单选题", "body": "正交编码最典型的通信应用是()", "options": [{"key": "A", "text": "时分复用 TDM", "images": []}, {"key": "B", "text": "码分多址 CDMA", "images": []}, {"key": "C", "text": "频分复用 FDM", "images": []}, {"key": "D", "text": "PCM 脉冲编码调制", "images": []}], "answer": "B", "explain": "正交编码最典型的通信应用是 CDMA 码分多址，用正交码区分不同用户。", "images": []}, {"sheet": "作业九", "index": 5, "type": "单选题", "body": "伪随机序列(PN 序列),“伪随机” 的含义是()", "options": [{"key": "A", "text": "完全真正随机,不可复现", "images": []}, {"key": "B", "text": "具有类似随机噪声的统计特性,但可以预先产生、重复复制", "images": []}, {"key": "C", "text": "只能模拟白噪声,不能用于扩频", "images": []}, {"key": "D", "text": "产生后不能重复", "images": []}], "answer": "B", "explain": "伪随机序列统计特性类似随机噪声，但可预先产生、重复复制。", "images": []}, {"sheet": "作业九", "index": 6, "type": "单选题", "body": "下列不属于 m 序列特点的是()", "options": [{"key": "A", "text": "一个周期内 “1” 的个数比 “0” 多 1 个", "images": []}, {"key": "B", "text": "具有二值自相关特性", "images": []}, {"key": "C", "text": "周期长度可以为任意正整数", "images": []}, {"key": "D", "text": "可由线性反馈移位寄存器生成", "images": []}], "answer": "C", "explain": "m 序列周期只能为 2^n−1，不能是任意正整数。其余三项都是 m 序列的特点。", "images": []}, {"sheet": "作业九", "index": 7, "type": "单选题", "body": "在扩频通信系统中,伪随机序列的主要作用是()", "options": [{"key": "A", "text": "压缩信号带宽", "images": []}, {"key": "B", "text": "扩展信号频谱,实现扩频", "images": []}, {"key": "C", "text": "消除码间串扰", "images": []}, {"key": "D", "text": "提高载波频率", "images": []}], "answer": "B", "explain": "扩频通信中伪随机序列的作用是扩展信号频谱，实现扩频。", "images": []}, {"sheet": "作业九", "index": 8, "type": "单选题", "body": "关于正交码组,下列说法错误的是()", "options": [{"key": "A", "text": "码组之间互相关为 0", "images": []}, {"key": "B", "text": "可用来区分不同用户", "images": []}, {"key": "C", "text": "码组内部自相关为 0", "images": []}, {"key": "D", "text": "沃尔什码是典型正交编码", "images": []}], "answer": "C", "explain": "正交码要求码组之间互相关为 0，而不是内部自相关为 0。C 说法错误。", "images": []}, {"sheet": "作业九", "index": 9, "type": "单选题", "body": "m 序列产生时,线性反馈移位寄存器的反馈抽头选择必须满足()", "options": [{"key": "A", "text": "任意抽头均可", "images": []}, {"key": "B", "text": "本原多项式,才能生成长度\\(2^n-1\\)的 m 序列", "images": []}, {"key": "C", "text": "抽头全部接输出", "images": []}, {"key": "D", "text": "仅一级抽头反馈", "images": []}], "answer": "B", "explain": "反馈抽头必须按本原多项式选取，才能生成长度 2^n−1 的 m 序列。", "images": []}, {"sheet": "作业九", "index": 10, "type": "单选题", "body": "伪随机序列除扩频通信外,还常用于()", "options": [{"key": "A", "text": "同步捕获、测距、信道扰码", "images": []}, {"key": "B", "text": "均匀量化", "images": []}, {"key": "C", "text": "升余弦滤波", "images": []}, {"key": "D", "text": "部分响应编码", "images": []}], "answer": "A", "explain": "伪随机序列除扩频外，还用于同步捕获、测距、信道扰码。", "images": []}, {"sheet": "测试一", "index": 1, "type": "单选题", "body": "下列调制方式中,属于线性调制的是()", "options": [{"key": "A", "text": "FM", "images": []}, {"key": "B", "text": "PM", "images": []}, {"key": "C", "text": "DSB", "images": []}, {"key": "D", "text": "以上都不是", "images": []}], "answer": "C", "explain": "DSB 属于线性调制；FM、PM 属于角度（非线性）调制。", "images": []}, {"sheet": "测试一", "index": 2, "type": "单选题", "body": "线性调制的核心本质是()", "options": [{"key": "A", "text": "载波频率随基带信号线性变化", "images": []}, {"key": "B", "text": "载波幅度随基带信号线性变化", "images": []}, {"key": "C", "text": "载波相位随基带信号线性变化", "images": []}, {"key": "D", "text": "信号频谱产生非线性变换", "images": []}], "answer": "B", "explain": "线性调制的本质是载波幅度随基带信号线性变化。", "images": []}, {"sheet": "测试一", "index": 3, "type": "单选题", "body": "AM调制信号的频谱组成是()", "options": [{"key": "A", "text": "仅上边带", "images": []}, {"key": "B", "text": "仅下边带", "images": []}, {"key": "C", "text": "载波+上边带+下边带", "images": []}, {"key": "D", "text": "无载波,仅双边带", "images": []}], "answer": "C", "explain": "AM 信号频谱由载波、上边带、下边带三部分组成。", "images": []}, {"sheet": "测试一", "index": 4, "type": "单选题", "body": "DSB双边带调制相较于AM调制,最大的优势是()", "options": [{"key": "A", "text": "带宽更小", "images": []}, {"key": "B", "text": "功率利用率更高", "images": []}, {"key": "C", "text": "解调更简单", "images": []}, {"key": "D", "text": "抗干扰能力更强", "images": []}], "answer": "B", "explain": "DSB 抑制载波，功率利用率高于 AM。", "images": []}, {"sheet": "测试一", "index": 5, "type": "单选题", "body": "常规AM调制存在的主要缺陷是()", "options": [{"key": "A", "text": "带宽过大", "images": []}, {"key": "B", "text": "载波功率消耗大量能量,功率利用率低", "images": []}, {"key": "C", "text": "无法相干解调", "images": []}, {"key": "D", "text": "频谱利用率极高", "images": []}], "answer": "B", "explain": "常规 AM 载波消耗大量功率但不携带信息，功率利用率低。", "images": []}, {"sheet": "测试一", "index": 6, "type": "单选题", "body": "SSB单边带调制信号的传输带宽为()设基带信号最高频率为$f_H$", "options": [{"key": "A", "text": "$2f_H$", "images": []}, {"key": "B", "text": "$f_H$", "images": []}, {"key": "C", "text": "$4f_H$", "images": []}, {"key": "D", "text": "$f_H/2$", "images": []}], "answer": "B", "explain": "SSB 单边带调制信号带宽为 f_H。", "images": []}, {"sheet": "测试一", "index": 7, "type": "单选题", "body": "AM、DSB调制信号的标准传输带宽为()", "options": [{"key": "A", "text": "$f_H$", "images": []}, {"key": "B", "text": "$2f_H$", "images": []}, {"key": "C", "text": "$3f_H$", "images": []}, {"key": "D", "text": "$4f_H$", "images": []}], "answer": "B", "explain": "AM、DSB 的标准传输带宽均为 2f_H。", "images": []}, {"sheet": "测试一", "index": 8, "type": "单选题", "body": "残留边带调制VSB的适用场景是()", "options": [{"key": "A", "text": "无直流分量的语音信号", "images": []}, {"key": "B", "text": "含直流、低频分量的基带信号(电视图像信号)", "images": []}, {"key": "C", "text": "高频窄带信号", "images": []}, {"key": "D", "text": "数字基带信号", "images": []}], "answer": "B", "explain": "VSB 适合含直流、低频分量的基带信号，如电视图像信号。", "images": []}, {"sheet": "测试一", "index": 9, "type": "单选题", "body": "关于VSB调制,下列说法正确的是()", "options": [{"key": "A", "text": "完全抑制一个边带", "images": []}, {"key": "B", "text": "保留完整一个边带和另一个边带的低频残留部分", "images": []}, {"key": "C", "text": "带宽严格等于$f_H$", "images": []}, {"key": "D", "text": "属于非线性调制", "images": []}], "answer": "B", "explain": "VSB 保留一个完整边带和另一个边带的低频残留部分。", "images": []}, {"sheet": "测试一", "index": 10, "type": "单选题", "body": "可以采用包络检波解调的调制方式是()", "options": [{"key": "A", "text": "常规AM", "images": []}, {"key": "B", "text": "DSB", "images": []}, {"key": "C", "text": "SSB", "images": []}, {"key": "D", "text": "VSB", "images": []}], "answer": "A", "explain": "常规 AM 信号包络与基带信号一致，可用包络检波。", "images": []}, {"sheet": "测试一", "index": 11, "type": "单选题", "body": "必须采用相干解调的线性调制方式是()", "options": [{"key": "A", "text": "普通AM", "images": []}, {"key": "B", "text": "DSB、SSB", "images": []}, {"key": "C", "text": "仅VSB", "images": []}, {"key": "D", "text": "所有线性调制", "images": []}], "answer": "B", "explain": "DSB、SSB 抑制载波后包络失真，必须相干解调。", "images": []}, {"sheet": "测试一", "index": 12, "type": "单选题", "body": "调制系数$\\mu=1$的AM信号,称为()", "options": [{"key": "A", "text": "欠调幅", "images": []}, {"key": "B", "text": "满调幅", "images": []}, {"key": "C", "text": "过调幅", "images": []}, {"key": "D", "text": "无调幅", "images": []}], "answer": "B", "explain": "调制系数 μ=1 的 AM 信号称为满调幅。", "images": []}, {"sheet": "测试一", "index": 13, "type": "单选题", "body": "AM信号过调幅($\\mu>1$)会导致()", "options": [{"key": "A", "text": "带宽减小", "images": []}, {"key": "B", "text": "包络失真,无法包络检波", "images": []}, {"key": "C", "text": "功率利用率降低", "images": []}, {"key": "D", "text": "噪声减小", "images": []}], "answer": "B", "explain": "过调幅（μ>1）包络失真，无法用包络检波正确解调。", "images": []}, {"sheet": "测试一", "index": 14, "type": "单选题", "body": "SSB调制的核心优势是()", "options": [{"key": "A", "text": "解调简单", "images": []}, {"key": "B", "text": "带宽最窄、频谱利用率高", "images": []}, {"key": "C", "text": "无需同步载波", "images": []}, {"key": "D", "text": "发射功率大", "images": []}], "answer": "B", "explain": "SSB 的核心优势是带宽最窄、频谱利用率高。", "images": []}, {"sheet": "测试一", "index": 15, "type": "单选题", "body": "下列哪种调制方式不包含载波分量()", "options": [{"key": "A", "text": "常规AM", "images": []}, {"key": "B", "text": "DSB", "images": []}, {"key": "C", "text": "VSB", "images": []}, {"key": "D", "text": "以上都不对", "images": []}], "answer": "B", "explain": "DSB 抑制载波，不含载波分量；常规 AM 含载波。你考试时选了 A，需注意区分。", "images": []}, {"sheet": "测试一", "index": 16, "type": "单选题", "body": "线性调制系统中,频谱利用率最高的是()", "options": [{"key": "A", "text": "AM", "images": []}, {"key": "B", "text": "DSB", "images": []}, {"key": "C", "text": "SSB", "images": []}, {"key": "D", "text": "VSB", "images": []}], "answer": "C", "explain": "SSB 只占一个边带带宽，频谱利用率最高。", "images": []}, {"sheet": "测试一", "index": 17, "type": "单选题", "body": "VSB调制的传输带宽特点是()", "options": [{"key": "A", "text": "略大于$f_H$", "images": []}, {"key": "B", "text": "严格等于$2f_H$", "images": []}, {"key": "C", "text": "严格等于$f_H$", "images": []}, {"key": "D", "text": "远大于$2f_H$", "images": []}], "answer": "A", "explain": "VSB 带宽介于 SSB 与 DSB 之间，略大于 f_H。", "images": []}, {"sheet": "测试一", "index": 18, "type": "单选题", "body": "基带信号含有丰富低频分量时,不宜采用的调制方式是()", "options": [{"key": "A", "text": "AM", "images": []}, {"key": "B", "text": "DSB", "images": []}, {"key": "C", "text": "SSB", "images": []}, {"key": "D", "text": "VSB", "images": []}], "answer": "C", "explain": "基带信号低频分量丰富时 SSB 滤波器难以实现，不宜采用。", "images": []}, {"sheet": "测试一", "index": 19, "type": "单选题", "body": "相干解调的核心要求是()", "options": [{"key": "A", "text": "本地载波与接收信号载波同频同相", "images": []}, {"key": "B", "text": "本地载波频率任意", "images": []}, {"key": "C", "text": "无需载波同步", "images": []}, {"key": "D", "text": "本地载波幅度最大", "images": []}], "answer": "A", "explain": "相干解调要求本地载波与接收信号载波同频同相。", "images": []}, {"sheet": "测试一", "index": 20, "type": "单选题", "body": "线性调制的共同特点是()", "options": [{"key": "A", "text": "频谱搬移,无新频率分量产生", "images": []}, {"key": "B", "text": "产生新的非线性频率分量", "images": []}, {"key": "C", "text": "载波频率随信号变化", "images": []}, {"key": "D", "text": "抗噪声性能一致", "images": []}], "answer": "A", "explain": "线性调制是频谱搬移，不产生新的频率分量。", "images": []}, {"sheet": "测试一", "index": 21, "type": "单选题", "body": "衡量调制系统抗噪声性能的核心指标是()", "options": [{"key": "A", "text": "传输带宽", "images": []}, {"key": "B", "text": "制度增益", "images": []}, {"key": "C", "text": "码元速率", "images": []}, {"key": "D", "text": "载波频率", "images": []}], "answer": "B", "explain": "制度增益是衡量调制系统抗噪声性能的核心指标。", "images": []}, {"sheet": "测试一", "index": 22, "type": "单选题", "body": "DSB调制系统的制度增益为()", "options": [{"key": "A", "text": "1", "images": []}, {"key": "B", "text": "2", "images": []}, {"key": "C", "text": "2/3", "images": []}, {"key": "D", "text": "3", "images": []}], "answer": "B", "explain": "DSB 调制系统的制度增益为 2。", "images": []}, {"sheet": "测试一", "index": 23, "type": "单选题", "body": "SSB调制系统的制度增益为()", "options": [{"key": "A", "text": "1", "images": []}, {"key": "B", "text": "2", "images": []}, {"key": "C", "text": "2/3", "images": []}, {"key": "D", "text": "1.5", "images": []}], "answer": "A", "explain": "SSB 调制系统的制度增益为 1。", "images": []}, {"sheet": "测试一", "index": 24, "type": "单选题", "body": "100%调幅($\\mu=1$)的AM系统,最大制度增益为()", "options": [{"key": "A", "text": "1", "images": []}, {"key": "B", "text": "2", "images": []}, {"key": "C", "text": "2/3", "images": []}, {"key": "D", "text": "3", "images": []}], "answer": "C", "explain": "100% 调幅 AM 系统最大制度增益为 2/3。", "images": []}, {"sheet": "测试一", "index": 25, "type": "单选题", "body": "相同信噪比条件下,三种线性调制抗噪声性能从优到劣排序为()", "options": [{"key": "A", "text": "DSB=SSB>AM", "images": []}, {"key": "B", "text": "AM>DSB>SSB", "images": []}, {"key": "C", "text": "SSB>DSB>AM", "images": []}, {"key": "D", "text": "DSB>AM>SSB", "images": []}], "answer": "A", "explain": "制度增益 DSB=2、SSB=1、AM 最大 2/3，故 DSB=SSB>AM。", "images": []}, {"sheet": "测试一", "index": 26, "type": "单选题", "body": "AM系统制度增益小于DSB的主要原因是()", "options": [{"key": "A", "text": "带宽更大", "images": []}, {"key": "B", "text": "载波功率不携带信息,白白消耗信噪比", "images": []}, {"key": "C", "text": "解调方式复杂", "images": []}, {"key": "D", "text": "频谱利用率低", "images": []}], "answer": "B", "explain": "AM 载波功率不携带信息，白白消耗输入信噪比。", "images": []}, {"sheet": "测试一", "index": 27, "type": "单选题", "body": "大信噪比条件下,包络检波AM系统的制度增益最大值为()", "options": [{"key": "A", "text": "2", "images": []}, {"key": "B", "text": "1", "images": []}, {"key": "C", "text": "2/3", "images": []}, {"key": "D", "text": "3/2", "images": []}], "answer": "C", "explain": "大信噪比下包络检波 AM 制度增益最大值为 2/3。", "images": []}, {"sheet": "测试一", "index": 28, "type": "单选题", "body": "关于SSB系统抗噪声性能,下列说法正确的是()", "options": [{"key": "A", "text": "优于DSB", "images": []}, {"key": "B", "text": "劣于AM", "images": []}, {"key": "C", "text": "与DSB等效,带宽更小", "images": []}, {"key": "D", "text": "抗噪声性能最差", "images": []}], "answer": "C", "explain": "SSB 抗噪声性能与 DSB 等效，且带宽更小。", "images": []}, {"sheet": "测试一", "index": 29, "type": "单选题", "body": "线性调制系统中,输出信噪比与输入信噪比的比值称为()", "options": [{"key": "A", "text": "频带利用率", "images": []}, {"key": "B", "text": "制度增益", "images": []}, {"key": "C", "text": "信噪比损耗", "images": []}, {"key": "D", "text": "传输效率", "images": []}], "answer": "B", "explain": "输出信噪比与输入信噪比之比称为制度增益。", "images": []}, {"sheet": "测试一", "index": 30, "type": "单选题", "body": "小信噪比条件下,AM包络检波会出现的现象是()", "options": [{"key": "A", "text": "无失真解调", "images": []}, {"key": "B", "text": "门限效应", "images": []}, {"key": "C", "text": "带宽压缩", "images": []}, {"key": "D", "text": "功率提升", "images": []}], "answer": "B", "explain": "小信噪比下 AM 包络检波出现门限效应。", "images": []}, {"sheet": "测试一", "index": 31, "type": "单选题", "body": "下列调制系统中,无门限效应的是()", "options": [{"key": "A", "text": "包络检波AM", "images": []}, {"key": "B", "text": "相干解调DSB、SSB", "images": []}, {"key": "C", "text": "所有线性调制", "images": []}, {"key": "D", "text": "VSB包络检波", "images": []}], "answer": "B", "explain": "相干解调的 DSB、SSB 系统无门限效应。", "images": []}, {"sheet": "测试一", "index": 32, "type": "单选题", "body": "门限效应的本质是()", "options": [{"key": "A", "text": "信噪比过低,噪声压制有用信号", "images": []}, {"key": "B", "text": "信号带宽超出传输范围", "images": []}, {"key": "C", "text": "载波频率偏移", "images": []}, {"key": "D", "text": "调制系数过大", "images": []}], "answer": "A", "explain": "门限效应本质：信噪比过低时噪声压制有用信号。", "images": []}, {"sheet": "测试一", "index": 33, "type": "单选题", "body": "VSB调制系统的抗噪声性能近似于()", "options": [{"key": "A", "text": "AM", "images": []}, {"key": "B", "text": "DSB", "images": []}, {"key": "C", "text": "SSB", "images": []}, {"key": "D", "text": "无规律", "images": []}], "answer": "C", "explain": "VSB 抗噪声性能近似于 SSB。", "images": []}, {"sheet": "测试一", "index": 34, "type": "单选题", "body": "相同传输带宽下,抗噪声性能最好的线性调制是()", "options": [{"key": "A", "text": "SSB", "images": []}, {"key": "B", "text": "DSB", "images": []}, {"key": "C", "text": "AM", "images": []}, {"key": "D", "text": "VSB", "images": []}], "answer": "A", "explain": "相同传输带宽下 SSB 抗噪声性能最好。", "images": []}, {"sheet": "测试一", "index": 35, "type": "单选题", "body": "线性调制系统中,仅依靠压缩带宽无法提升抗噪声性能的核心原因是()", "options": [{"key": "A", "text": "噪声功率随带宽变化", "images": []}, {"key": "B", "text": "载波功率固定", "images": []}, {"key": "C", "text": "调制系数受限", "images": []}, {"key": "D", "text": "解调方式固定", "images": []}], "answer": "A", "explain": "压缩带宽的同时噪声功率也改变，仅靠压缩带宽无法提升抗噪声性能。", "images": []}, {"sheet": "测试一", "index": 36, "type": "单选题", "body": "角度调制包含哪两种基本方式()", "options": [{"key": "A", "text": "AM、DSB", "images": []}, {"key": "B", "text": "FM、PM", "images": []}, {"key": "C", "text": "SSB、VSB", "images": []}, {"key": "D", "text": "FDM、TDM", "images": []}], "answer": "B", "explain": "角度调制包括调频 FM 和调相 PM 两种基本方式。", "images": []}, {"sheet": "测试一", "index": 37, "type": "单选题", "body": "调频的定义是()", "options": [{"key": "A", "text": "载波幅度随基带信号线性变化", "images": []}, {"key": "B", "text": "载波瞬时频率随基带信号线性变化", "images": []}, {"key": "C", "text": "载波相位随基带信号线性变化", "images": []}, {"key": "D", "text": "载波带宽随信号随机变化", "images": []}], "answer": "B", "explain": "调频是载波瞬时频率随基带信号线性变化。", "images": []}, {"sheet": "测试一", "index": 38, "type": "单选题", "body": "调相的定义是()", "options": [{"key": "A", "text": "载波瞬时相位随基带信号线性变化", "images": []}, {"key": "B", "text": "载波频率随基带信号线性变化", "images": []}, {"key": "C", "text": "载波幅度随基带信号变化", "images": []}, {"key": "D", "text": "载波相位固定不变", "images": []}], "answer": "A", "explain": "调相是载波瞬时相位随基带信号线性变化。", "images": []}, {"sheet": "测试一", "index": 39, "type": "单选题", "body": "关于线性调制与角度调制,下列说法正确的是()", "options": [{"key": "A", "text": "FM、PM属于线性调制", "images": []}, {"key": "B", "text": "FM、PM属于非线性调制", "images": []}, {"key": "C", "text": "所有调制都是线性调制", "images": []}, {"key": "D", "text": "角度调制频谱无新分量产生", "images": []}], "answer": "B", "explain": "FM、PM 属于非线性（角度）调制。", "images": []}, {"sheet": "测试一", "index": 40, "type": "单选题", "body": "角度调制信号的频谱特点是()", "options": [{"key": "A", "text": "仅包含上下边带,无多余分量", "images": []}, {"key": "B", "text": "包含无穷多频率分量,频谱非线性扩展", "images": []}, {"key": "C", "text": "带宽固定不变", "images": []}, {"key": "D", "text": "与基带信号频谱完全一致", "images": []}], "answer": "B", "explain": "角度调制频谱包含无穷多频率分量，呈非线性扩展。", "images": []}, {"sheet": "测试一", "index": 41, "type": "单选题", "body": "最大频偏$\\Delta f$是哪种调制的核心参数()", "options": [{"key": "A", "text": "AM", "images": []}, {"key": "B", "text": "FM", "images": []}, {"key": "C", "text": "SSB", "images": []}, {"key": "D", "text": "DSB", "images": []}], "answer": "B", "explain": "最大频偏 Δf 是 FM 的核心参数。", "images": []}, {"sheet": "测试一", "index": 42, "type": "单选题", "body": "最大相偏$\\Delta\\varphi$是哪种调制的核心参数()", "options": [{"key": "A", "text": "PM", "images": []}, {"key": "B", "text": "FM", "images": []}, {"key": "C", "text": "VSB", "images": []}, {"key": "D", "text": "AM", "images": []}], "answer": "A", "explain": "最大相偏 Δφ 是 PM 的核心参数。", "images": []}, {"sheet": "测试一", "index": 43, "type": "单选题", "body": "窄带FM信号的带宽近似等于()", "options": [{"key": "A", "text": "$f_H$", "images": []}, {"key": "B", "text": "$2f_H$", "images": []}, {"key": "C", "text": "$3f_H$", "images": []}, {"key": "D", "text": "$4f_H$", "images": []}], "answer": "B", "explain": "窄带 FM 信号带宽近似等于 2f_H。", "images": []}, {"sheet": "测试一", "index": 44, "type": "单选题", "body": "宽带FM调制的主要特点是()", "options": [{"key": "A", "text": "带宽窄,抗噪声性能差", "images": []}, {"key": "B", "text": "带宽宽,抗噪声性能优异", "images": []}, {"key": "C", "text": "属于线性调制", "images": []}, {"key": "D", "text": "功率利用率极高", "images": []}], "answer": "B", "explain": "宽带 FM 带宽宽，以带宽换抗噪声性能，性能优异。", "images": []}, {"sheet": "测试一", "index": 45, "type": "单选题", "body": "FM与PM的相互关系是()", "options": [{"key": "A", "text": "无任何关联", "images": []}, {"key": "B", "text": "已知基带信号,可相互转换,本质均为角度调制", "images": []}, {"key": "C", "text": "调制原理完全相同", "images": []}, {"key": "D", "text": "频谱特性完全一致", "images": []}], "answer": "B", "explain": "FM 与 PM 可相互转换，本质均为角度调制。", "images": []}, {"sheet": "测试一", "index": 46, "type": "单选题", "body": "频分复用FDM的核心工作原理是()", "options": [{"key": "A", "text": "不同时隙传输多路信号", "images": []}, {"key": "B", "text": "多路信号占用不同载波频率、同一时间共享信道", "images": []}, {"key": "C", "text": "利用正交码区分多路信号", "images": []}, {"key": "D", "text": "不同极化方式传输信号", "images": []}], "answer": "B", "explain": "FDM 将多路信号调制到不同载波频率，同一时间共享信道。", "images": []}, {"sheet": "测试一", "index": 47, "type": "单选题", "body": "FDM通信系统的主要优势是()", "options": [{"key": "A", "text": "节省时隙资源", "images": []}, {"key": "B", "text": "充分利用信道频带资源,实现多路并行传输", "images": []}, {"key": "C", "text": "无需载波同步", "images": []}, {"key": "D", "text": "无信道干扰", "images": []}], "answer": "B", "explain": "FDM 充分利用信道频带资源，实现多路并行传输。", "images": []}, {"sheet": "测试一", "index": 48, "type": "单选题", "body": "FDM系统各路信号之间必须设置保护间隔的目的是()", "options": [{"key": "A", "text": "防止码间串扰", "images": []}, {"key": "B", "text": "防止邻路信号频谱混叠、产生串扰", "images": []}, {"key": "C", "text": "降低传输功率", "images": []}, {"key": "D", "text": "简化解调电路", "images": []}], "answer": "B", "explain": "保护间隔防止邻路信号频谱混叠、产生串扰。", "images": []}, {"sheet": "测试一", "index": 49, "type": "单选题", "body": "下列通信技术中,属于频分复用应用的是()", "options": [{"key": "A", "text": "PCM30/32路基带传输", "images": []}, {"key": "B", "text": "广播调频、有线电视信号传输", "images": []}, {"key": "C", "text": "时分多址通信", "images": []}, {"key": "D", "text": "码分多址通信", "images": []}], "answer": "B", "explain": "广播调频、有线电视信号传输属于 FDM 应用。", "images": []}, {"sheet": "测试一", "index": 50, "type": "单选题", "body": "关于FDM与TDM,下列说法正确的是()", "options": [{"key": "A", "text": "FDM分时隙、同频带", "images": []}, {"key": "B", "text": "TDM分时隙、同频带;FDM分频率、同时隙", "images": []}, {"key": "C", "text": "二者原理完全相同", "images": []}, {"key": "D", "text": "FDM抗干扰能力弱于TDM", "images": []}], "answer": "B", "explain": "TDM 分时隙、同频带；FDM 分频率、同时隙。", "images": []}, {"sheet": "测试二", "index": 1, "type": "单选题", "body": "下面不属于数字基带传输系统组成部分的是()", "options": [{"key": "A", "text": "发送滤波器", "images": []}, {"key": "B", "text": "载波调制器", "images": []}, {"key": "C", "text": "接收滤波器", "images": []}, {"key": "D", "text": "抽样判决器", "images": []}], "answer": "B", "explain": "数字基带传输系统不含载波调制器。", "images": []}, {"sheet": "测试二", "index": 2, "type": "单选题", "body": "数字基带信号的频谱一般包含()", "options": [{"key": "A", "text": "只有连续谱", "images": []}, {"key": "B", "text": "只有离散谱", "images": []}, {"key": "C", "text": "连续谱,部分码型含有离散谱", "images": []}, {"key": "D", "text": "既无连续谱也无离散谱", "images": []}], "answer": "C", "explain": "数字基带信号频谱一般含连续谱，部分码型含离散谱。", "images": []}, {"sheet": "测试二", "index": 3, "type": "单选题", "body": "单极性不归零码的频谱特点是()", "options": [{"key": "A", "text": "含有直流分量,无位同步离散线谱", "images": []}, {"key": "B", "text": "无直流分量,含有位同步离散谱", "images": []}, {"key": "C", "text": "无直流分量,无位同步离散谱", "images": []}, {"key": "D", "text": "含有直流分量和丰富的同步离散谱", "images": []}], "answer": "A", "explain": "单极性不归零码含直流分量，无位同步离散线谱。", "images": []}, {"sheet": "测试二", "index": 4, "type": "单选题", "body": "双极性不归零码,等概率 0、1 时()", "options": [{"key": "A", "text": "直流分量为 0", "images": []}, {"key": "B", "text": "直流分量最大", "images": []}, {"key": "C", "text": "一定存在同步离散谱", "images": []}, {"key": "D", "text": "适合包络检波", "images": []}], "answer": "A", "explain": "0、1 等概率时双极性不归零码直流分量为 0。", "images": []}, {"sheet": "测试二", "index": 5, "type": "单选题", "body": "基带信号频谱中的连续谱主要作用是()", "options": [{"key": "A", "text": "提取位同步时钟", "images": []}, {"key": "B", "text": "确定信号占用带宽", "images": []}, {"key": "C", "text": "降低噪声功率", "images": []}, {"key": "D", "text": "消除码间串扰", "images": []}], "answer": "B", "explain": "连续谱用于确定信号占用的带宽。", "images": []}, {"sheet": "测试二", "index": 6, "type": "单选题", "body": "基带信号频谱中的离散谱主要作用是()", "options": [{"key": "A", "text": "确定带宽", "images": []}, {"key": "B", "text": "提取位同步信号", "images": []}, {"key": "C", "text": "减小发送功率", "images": []}, {"key": "D", "text": "改善信噪比", "images": []}], "answer": "B", "explain": "离散谱用于提取位同步信号。", "images": []}, {"sheet": "测试二", "index": 7, "type": "单选题", "body": "下面哪种码型自带位同步离散谱,便于同步提取()", "options": [{"key": "A", "text": "双极性 NRZ", "images": []}, {"key": "B", "text": "单极性 RZ", "images": []}, {"key": "C", "text": "双极性 RZ 等概率", "images": []}, {"key": "D", "text": "差分码", "images": []}], "answer": "B", "explain": "单极性 RZ 自带位同步离散谱，便于同步提取。", "images": []}, {"sheet": "测试二", "index": 8, "type": "单选题", "body": "发送滤波器在基带系统中的作用是()", "options": [{"key": "A", "text": "滤除信道噪声", "images": []}, {"key": "B", "text": "波形成形、限制发送信号带宽", "images": []}, {"key": "C", "text": "抽样判决", "images": []}, {"key": "D", "text": "产生定时脉冲", "images": []}], "answer": "B", "explain": "发送滤波器的作用是波形成形、限制发送信号带宽。", "images": []}, {"sheet": "测试二", "index": 9, "type": "单选题", "body": "接收滤波器的主要作用是()", "options": [{"key": "A", "text": "滤除带外噪声、对接收信号整形", "images": []}, {"key": "B", "text": "产生载波", "images": []}, {"key": "C", "text": "提高码元速率", "images": []}, {"key": "D", "text": "消除定时误差", "images": []}], "answer": "A", "explain": "接收滤波器滤除带外噪声并对接收信号整形。", "images": []}, {"sheet": "测试二", "index": 10, "type": "单选题", "body": "基带传输中,抽样判决器的作用是()", "options": [{"key": "A", "text": "在规定时刻抽样,判决恢复原始码元", "images": []}, {"key": "B", "text": "抑制信道畸变", "images": []}, {"key": "C", "text": "压缩带宽", "images": []}, {"key": "D", "text": "完成码型变换", "images": []}], "answer": "A", "explain": "抽样判决器在规定时刻抽样，判决恢复原始码元。", "images": []}, {"sheet": "测试二", "index": 11, "type": "单选题", "body": "码间串扰产生的根本原因是()", "options": [{"key": "A", "text": "信道噪声", "images": []}, {"key": "B", "text": "传输系统冲激响应拖尾,在相邻码元抽样点叠加", "images": []}, {"key": "C", "text": "码元速率太低", "images": []}, {"key": "D", "text": "直流分量过大", "images": []}], "answer": "B", "explain": "码间串扰根因：系统冲激响应拖尾在相邻码元抽样点叠加。", "images": []}, {"sheet": "测试二", "index": 12, "type": "单选题", "body": "下面关于差分码(相对码)说法正确的是()", "options": [{"key": "A", "text": "用电平绝对值表示信息", "images": []}, {"key": "B", "text": "用电平变化与否承载信息", "images": []}, {"key": "C", "text": "一定有直流分量", "images": []}, {"key": "D", "text": "不能用于基带传输", "images": []}], "answer": "B", "explain": "差分码用电平变化与否承载信息。", "images": []}, {"sheet": "测试二", "index": 13, "type": "单选题", "body": "等概率双极性 NRZ 码,相比于单极性 NRZ,优势是()", "options": [{"key": "A", "text": "有直流分量", "images": []}, {"key": "B", "text": "无直流分量,抗干扰能力更强", "images": []}, {"key": "C", "text": "带宽更小", "images": []}, {"key": "D", "text": "自带同步离散谱", "images": []}], "answer": "B", "explain": "等概率双极性 NRZ 无直流分量，抗干扰能力更强。", "images": []}, {"sheet": "测试二", "index": 14, "type": "单选题", "body": "基带传输系统的噪声主要在哪个模块之后引入()", "options": [{"key": "A", "text": "发送滤波器", "images": []}, {"key": "B", "text": "信道", "images": []}, {"key": "C", "text": "接收滤波器", "images": []}, {"key": "D", "text": "抽样判决器", "images": []}], "answer": "B", "explain": "信道是噪声的主要引入位置。", "images": []}, {"sheet": "测试二", "index": 15, "type": "单选题", "body": "适合在低频特性差的信道传输、无直流的码型是()", "options": [{"key": "A", "text": "单极性 NRZ", "images": []}, {"key": "B", "text": "双极性 NRZ", "images": []}, {"key": "C", "text": "单极性 RZ", "images": []}, {"key": "D", "text": "单极性码", "images": []}], "answer": "B", "explain": "双极性 NRZ 无直流，适合低频特性差的信道传输。", "images": []}, {"sheet": "测试二", "index": 16, "type": "单选题", "body": "无码间串扰的时域条件(\\(T_s\\)为码元周期)()", "options": [{"key": "A", "text": "\\(h(kT_s)=0,\\forall k\\)", "images": []}, {"key": "B", "text": "\\(h(0)=1,\\ h(kT_s)=0,\\ k\\neq0\\)", "images": []}, {"key": "C", "text": "\\(h(kT_s)=1,\\forall k\\)", "images": []}, {"key": "D", "text": "\\(h(t)\\)为矩形脉冲", "images": []}], "answer": "B", "explain": "无码间串扰时域条件：h(0)=1，h(kT_s)=0（k≠0）。", "images": []}, {"sheet": "测试二", "index": 17, "type": "单选题", "body": "奈奎斯特第一准则描述的是()", "options": [{"key": "A", "text": "抽样定理", "images": []}, {"key": "B", "text": "基带无码间串扰传输条件", "images": []}, {"key": "C", "text": "匹配滤波器条件", "images": []}, {"key": "D", "text": "调制解调准则", "images": []}], "answer": "B", "explain": "奈奎斯特第一准则描述基带无码间串扰的传输条件。", "images": []}, {"sheet": "测试二", "index": 18, "type": "单选题", "body": "理想低通奈奎斯特系统,频带利用率最大值是()", "options": [{"key": "A", "text": "1 Baud/Hz", "images": []}, {"key": "B", "text": "2 Baud/Hz", "images": []}, {"key": "C", "text": "0.5 Baud/Hz", "images": []}, {"key": "D", "text": "4 Baud/Hz", "images": []}], "answer": "B", "explain": "理想低通奈奎斯特系统频带利用率最大 2 Baud/Hz。", "images": []}, {"sheet": "测试二", "index": 19, "type": "单选题", "body": "理想低通奈奎斯特特性的主要缺点是()", "options": [{"key": "A", "text": "频带利用率太低", "images": []}, {"key": "B", "text": "冲激响应拖尾衰减慢,对定时误差极其敏感", "images": []}, {"key": "C", "text": "带宽太大", "images": []}, {"key": "D", "text": "不能传输数字信号", "images": []}], "answer": "B", "explain": "理想低通冲激响应拖尾衰减慢，对定时误差极其敏感。", "images": []}, {"sheet": "测试二", "index": 20, "type": "单选题", "body": "工程上替代理想低通的成形滤波器是()", "options": [{"key": "A", "text": "高通滤波器", "images": []}, {"key": "B", "text": "升余弦滚降滤波器", "images": []}, {"key": "C", "text": "带通滤波器", "images": []}, {"key": "D", "text": "全通滤波器", "images": []}], "answer": "B", "explain": "工程上用升余弦滚降滤波器替代理想低通。", "images": []}, {"sheet": "测试二", "index": 21, "type": "单选题", "body": "升余弦滚降系数\\(\\alpha\\)取值范围()", "options": [{"key": "A", "text": "\\(\\alpha<0\\)", "images": []}, {"key": "B", "text": "\\(0\\le\\alpha\\le1\\)", "images": []}, {"key": "C", "text": "\\(\\alpha>1\\)", "images": []}, {"key": "D", "text": "任意实数", "images": []}], "answer": "B", "explain": "升余弦滚降系数取值范围 0≤α≤1。", "images": []}, {"sheet": "测试二", "index": 22, "type": "单选题", "body": "滚降系数\\(\\alpha\\)增大,会带来()", "options": [{"key": "A", "text": "频带利用率升高,拖尾衰减变快", "images": []}, {"key": "B", "text": "频带利用率降低,拖尾衰减变快", "images": []}, {"key": "C", "text": "频带利用率升高,拖尾衰减变慢", "images": []}, {"key": "D", "text": "频带利用率降低,拖尾衰减变慢", "images": []}], "answer": "B", "explain": "α 增大：频带利用率降低，时域拖尾衰减变快。", "images": []}, {"sheet": "测试二", "index": 23, "type": "单选题", "body": "\\(\\alpha=0\\)的升余弦特性等价于()", "options": [{"key": "A", "text": "理想低通奈奎斯特特性", "images": []}, {"key": "B", "text": "全通特性", "images": []}, {"key": "C", "text": "高通特性", "images": []}, {"key": "D", "text": "带通特性", "images": []}], "answer": "A", "explain": "α=0 的升余弦特性等价于理想低通奈奎斯特特性。", "images": []}, {"sheet": "测试二", "index": 24, "type": "单选题", "body": "升余弦基带系统频带利用率公式()", "options": [{"key": "A", "text": "\\(\\eta=\\dfrac{2}{1+\\alpha}\\ \\text{Baud/Hz}\\)", "images": []}, {"key": "B", "text": "\\(\\eta=1+\\alpha\\)", "images": []}, {"key": "C", "text": "\\(\\eta=2\\alpha\\)", "images": []}, {"key": "D", "text": "\\(\\eta=2(1+\\alpha)\\)", "images": []}], "answer": "A", "explain": "升余弦基带系统频带利用率 η=2/(1+α) Baud/Hz。", "images": []}, {"sheet": "测试二", "index": 25, "type": "单选题", "body": "引入升余弦滚降的主要目的是()", "options": [{"key": "A", "text": "提高频带利用率", "images": []}, {"key": "B", "text": "加快时域拖尾衰减,降低定时误差带来的码间串扰", "images": []}, {"key": "C", "text": "消除噪声", "images": []}, {"key": "D", "text": "减小发送功率", "images": []}], "answer": "B", "explain": "升余弦滚降的目的是加快拖尾衰减，降低定时误差引起的码间串扰。", "images": []}, {"sheet": "测试二", "index": 26, "type": "单选题", "body": "奈奎斯特带宽\\(f_N\\)和码元速率\\(T_s\\)关系()", "options": [{"key": "A", "text": "\\(f_N=R_s/2\\)", "images": []}, {"key": "B", "text": "\\(f_N=R_s\\)", "images": []}, {"key": "C", "text": "\\(f_N=2R_s\\)", "images": []}, {"key": "D", "text": "\\(f_N=4R_s\\)", "images": []}], "answer": "A", "explain": "奈奎斯特带宽与码元速率关系 f_N=R_s/2。", "images": []}, {"sheet": "测试二", "index": 27, "type": "单选题", "body": "满足奈奎斯特无码间串扰条件的系统,下面说法正确的是()", "options": [{"key": "A", "text": "没有码间串扰,但噪声依然会造成误码", "images": []}, {"key": "B", "text": "无码间串扰、无噪声误码", "images": []}, {"key": "C", "text": "一定存在码间串扰", "images": []}, {"key": "D", "text": "频带利用率可以超过 2 Baud/Hz", "images": []}], "answer": "A", "explain": "满足奈奎斯特条件时无码间串扰，但噪声依然会造成误码。", "images": []}, {"sheet": "测试二", "index": 28, "type": "单选题", "body": "基带系统产生误码的两个主要因素()", "options": [{"key": "A", "text": "码间串扰 + 信道加性噪声", "images": []}, {"key": "B", "text": "载波频偏 + 相位抖动", "images": []}, {"key": "C", "text": "带宽过小 + 码率过低", "images": []}, {"key": "D", "text": "同步信号太强", "images": []}], "answer": "A", "explain": "基带系统误码两大因素：码间串扰与信道加性噪声。", "images": []}, {"sheet": "测试二", "index": 29, "type": "单选题", "body": "奈奎斯特频域条件:系统传输函数\\(H(\\omega)\\)沿频率轴平移()后叠加为常数", "options": [{"key": "A", "text": "\\(\\dfrac{\\pi}{T_s}\\)", "images": []}, {"key": "B", "text": "\\(\\dfrac{2\\pi}{T_s}\\)", "images": []}, {"key": "C", "text": "\\(\\dfrac{1}{T_s}\\)", "images": []}, {"key": "D", "text": "\\(\\dfrac{2}{T_s}\\)", "images": []}], "answer": "B", "explain": "奈奎斯特频域条件：H(ω) 沿频率轴平移 2π/T_s 后叠加为常数。", "images": []}, {"sheet": "测试二", "index": 30, "type": "单选题", "body": "相比理想低通,升余弦滤波器的优势是()", "options": [{"key": "A", "text": "带宽更小", "images": []}, {"key": "B", "text": "拖尾衰减快,定时容错性更好", "images": []}, {"key": "C", "text": "频带利用率更高", "images": []}, {"key": "D", "text": "不需要同步", "images": []}], "answer": "B", "explain": "升余弦相比理想低通拖尾衰减快，定时容错性更好。", "images": []}, {"sheet": "测试二", "index": 31, "type": "单选题", "body": "部分响应技术的核心思想是()", "options": [{"key": "A", "text": "完全消除码间串扰", "images": []}, {"key": "B", "text": "人为引入可控的码间串扰,换取高频带利用率", "images": []}, {"key": "C", "text": "消除噪声", "images": []}, {"key": "D", "text": "降低码元速率", "images": []}], "answer": "B", "explain": "部分响应人为引入可控码间串扰，换取高频带利用率。", "images": []}, {"sheet": "测试二", "index": 32, "type": "单选题", "body": "第一类部分响应,相关编码输出为()", "options": [{"key": "A", "text": "\\(c_k=a_k+a_{k-1}\\)", "images": []}, {"key": "B", "text": "\\(c_k=a_k-a_{k-1}\\)", "images": []}, {"key": "C", "text": "\\(c_k=2a_k\\)", "images": []}, {"key": "D", "text": "\\(c_k=a_k\\)", "images": []}], "answer": "A", "explain": "第一类部分响应相关编码输出 c_k=a_k+a_{k−1}。", "images": []}, {"sheet": "测试二", "index": 33, "type": "单选题", "body": "部分响应系统引入预编码的目的是()", "options": [{"key": "A", "text": "压缩带宽", "images": []}, {"key": "B", "text": "抑制差错传播", "images": []}, {"key": "C", "text": "增大信噪比", "images": []}, {"key": "D", "text": "改变码元速率", "images": []}], "answer": "B", "explain": "预编码用于抑制部分响应系统的差错传播。", "images": []}, {"sheet": "测试二", "index": 34, "type": "单选题", "body": "不做预编码的部分响应系统的严重问题是()", "options": [{"key": "A", "text": "频带利用率太低", "images": []}, {"key": "B", "text": "差错传播,一个错码引发一串错误", "images": []}, {"key": "C", "text": "无码间串扰", "images": []}, {"key": "D", "text": "无法提取同步", "images": []}], "answer": "B", "explain": "不做预编码时存在差错传播，一个错码引发一串错误。", "images": []}, {"sheet": "测试二", "index": 35, "type": "单选题", "body": "第一类部分响应系统的频带利用率为()", "options": [{"key": "A", "text": "1 Baud/Hz", "images": []}, {"key": "B", "text": "2 Baud/Hz", "images": []}, {"key": "C", "text": "0.5 Baud/Hz", "images": []}, {"key": "D", "text": "4 Baud/Hz", "images": []}], "answer": "B", "explain": "第一类部分响应系统频带利用率 2 Baud/Hz。", "images": []}, {"sheet": "测试二", "index": 36, "type": "单选题", "body": "部分响应波形的时域特点()", "options": [{"key": "A", "text": "拖尾衰减速度比理想低通更快", "images": []}, {"key": "B", "text": "拖尾衰减比理想低通更慢", "images": []}, {"key": "C", "text": "无任何码间串扰", "images": []}, {"key": "D", "text": "是矩形脉冲", "images": []}], "answer": "A", "explain": "部分响应波形拖尾衰减速度比理想低通更快。", "images": []}, {"sheet": "测试二", "index": 37, "type": "单选题", "body": "部分响应系统的频谱特性()", "options": [{"key": "A", "text": "无限宽", "images": []}, {"key": "B", "text": "严格带限", "images": []}, {"key": "C", "text": "只有直流分量", "images": []}, {"key": "D", "text": "只有离散谱", "images": []}], "answer": "B", "explain": "部分响应系统的频谱严格带限。", "images": []}, {"sheet": "测试二", "index": 38, "type": "单选题", "body": "部分响应技术的设计目标是()", "options": [{"key": "A", "text": "兼顾 2 Baud/Hz 频带利用率和较快的拖尾衰减", "images": []}, {"key": "B", "text": "完全消除误码", "images": []}, {"key": "C", "text": "无限压缩带宽", "images": []}, {"key": "D", "text": "不需要抽样判决", "images": []}], "answer": "A", "explain": "部分响应技术兼顾 2 Baud/Hz 频带利用率与较快拖尾衰减。", "images": []}, {"sheet": "测试二", "index": 39, "type": "单选题", "body": "相关编码在部分响应中的作用是()", "options": [{"key": "A", "text": "引入可控码间串扰,构造部分响应波形", "images": []}, {"key": "B", "text": "消除全部码间串扰", "images": []}, {"key": "C", "text": "滤除噪声", "images": []}, {"key": "D", "text": "提取同步时钟", "images": []}], "answer": "A", "explain": "相关编码引入可控码间串扰，构造部分响应波形。", "images": []}, {"sheet": "测试二", "index": 40, "type": "单选题", "body": "关于部分响应系统,说法错误的是()", "options": [{"key": "A", "text": "存在可控码间串扰", "images": []}, {"key": "B", "text": "需要预编码解决差错传播", "images": []}, {"key": "C", "text": "频带利用率低于\\(\\alpha=1\\)升余弦系统", "images": []}, {"key": "D", "text": "属于奈奎斯特体系的波形设计", "images": []}], "answer": "C", "explain": "部分响应频带利用率（2 Baud/Hz）高于 α=1 升余弦系统（1 Baud/Hz），C 说法错误。", "images": []}, {"sheet": "测试二", "index": 41, "type": "单选题", "body": "数字频带传输对比数字基带传输,新增的核心模块是()", "options": [{"key": "A", "text": "发送滤波器", "images": []}, {"key": "B", "text": "调制器、解调器", "images": []}, {"key": "C", "text": "接收滤波器", "images": []}, {"key": "D", "text": "抽样判决器", "images": []}], "answer": "B", "explain": "数字频带传输比基带传输新增调制器与解调器。", "images": []}, {"sheet": "测试二", "index": 42, "type": "单选题", "body": "2ASK 信号的主瓣带宽(\\(R_s\\)为码元速率)()", "options": [{"key": "A", "text": "\\(R_s\\)", "images": []}, {"key": "B", "text": "\\(2R_s\\)", "images": []}, {"key": "C", "text": "\\(0.5R_s\\)", "images": []}, {"key": "D", "text": "\\(4R_s\\)", "images": []}], "answer": "B", "explain": "2ASK 信号主瓣带宽为 2R_s。", "images": []}, {"sheet": "测试二", "index": 43, "type": "单选题", "body": "相同信噪比下,二进制调制抗噪声性能最优的是()", "options": [{"key": "A", "text": "2ASK", "images": []}, {"key": "B", "text": "2FSK", "images": []}, {"key": "C", "text": "2PSK", "images": []}, {"key": "D", "text": "三者相同", "images": []}], "answer": "C", "explain": "相同信噪比下二进制调制中 2PSK 抗噪声性能最优。", "images": []}, {"sheet": "测试二", "index": 44, "type": "单选题", "body": "2PSK 调制存在的特有问题是()", "options": [{"key": "A", "text": "带宽过大", "images": []}, {"key": "B", "text": "相位模糊(倒 π 问题)", "images": []}, {"key": "C", "text": "不能相干解调", "images": []}, {"key": "D", "text": "只适合基带信道", "images": []}], "answer": "B", "explain": "2PSK 的特有问题是相位模糊（倒 π）。", "images": []}, {"sheet": "测试二", "index": 45, "type": "单选题", "body": "工程上用来解决 2PSK 相位模糊的调制方式是()", "options": [{"key": "A", "text": "2ASK", "images": []}, {"key": "B", "text": "2DPSK", "images": []}, {"key": "C", "text": "2FSK", "images": []}, {"key": "D", "text": "PAM", "images": []}], "answer": "B", "explain": "工程上用 2DPSK 解决 2PSK 相位模糊问题。", "images": []}, {"sheet": "测试二", "index": 46, "type": "单选题", "body": "相同码元速率下,2ASK、2PSK、2DPSK 信号主瓣带宽关系()", "options": [{"key": "A", "text": "2ASK > 2PSK", "images": []}, {"key": "B", "text": "2PSK > 2ASK", "images": []}, {"key": "C", "text": "\\(B_{2ASK}=B_{2PSK}=B_{2DPSK}=2R_s\\)", "images": []}, {"key": "D", "text": "无固定关系", "images": []}], "answer": "C", "explain": "相同码元速率下三种信号主瓣带宽相等：B=2R_s。", "images": []}, {"sheet": "测试二", "index": 47, "type": "单选题", "body": "数字频带传输的本质是()", "options": [{"key": "A", "text": "将基带信号频谱搬移到高频载波上", "images": []}, {"key": "B", "text": "改变码元速率", "images": []}, {"key": "C", "text": "消除码间串扰", "images": []}, {"key": "D", "text": "消除噪声", "images": []}], "answer": "A", "explain": "数字频带传输的本质是把基带频谱搬移到高频载波上。", "images": []}, {"sheet": "测试二", "index": 48, "type": "单选题", "body": "2FSK 可以采用的非相干解调方式是()", "options": [{"key": "A", "text": "相干解调", "images": []}, {"key": "B", "text": "包络检波、过零检测法", "images": []}, {"key": "C", "text": "匹配滤波", "images": []}, {"key": "D", "text": "相关接收", "images": []}], "answer": "B", "explain": "2FSK 非相干解调方式：包络检波、过零检测法。", "images": []}, {"sheet": "测试二", "index": 49, "type": "单选题", "body": "M 进制数字调制,M 增大时(相同信噪比)()", "options": [{"key": "A", "text": "频带利用率升高,抗误码性能下降", "images": []}, {"key": "B", "text": "频带利用率升高,抗误码性能上升", "images": []}, {"key": "C", "text": "频带利用率下降,抗误码性能下降", "images": []}, {"key": "D", "text": "频带利用率下降,抗误码性能上升", "images": []}], "answer": "A", "explain": "M 增大：频带利用率升高，抗误码性能下降。", "images": []}, {"sheet": "测试二", "index": 50, "type": "单选题", "body": "下面适合无线远距离传输的是()", "options": [{"key": "A", "text": "数字基带传输", "images": []}, {"key": "B", "text": "数字频带传输", "images": []}, {"key": "C", "text": "单极性基带码直接传输", "images": []}, {"key": "D", "text": "双极性基带码直接传输", "images": []}], "answer": "B", "explain": "无线远距离传输采用数字频带传输。", "images": []}];
+const STORE_KEY = 'ykt-practice-v1';
+
+/* ---------- 数据整理 ---------- */
+function qid(q) { return q.sheet + '|' + q.index; }
+const SHEET_ORDER = [];
+const BY_SHEET = {};
+for (const q of DATA) {
+  if (!BY_SHEET[q.sheet]) { BY_SHEET[q.sheet] = []; SHEET_ORDER.push(q.sheet); }
+  BY_SHEET[q.sheet].push(q);
+}
+
+/* 章节分组：按章号归并，无章号的归入课堂练习 */
+const CARD_ALIAS = {
+  '2022-第1章-时延--练习题': '第1章 时延',
+  '2023-第3章最小帧长-练习题': '第3章 最小帧长',
+  '2022-第3章CRC-练习题': '第3章 CRC',
+  '2021-TCP序号-练习题': 'TCP 序号',
+  '2024-运输层-流量控制-练习题': '运输层 流量控制'
+};
+const CHAPTERS = [];
+for (const s of SHEET_ORDER) {
+  const m = s.match(/^(第\d+章)\s*(.*?)(?:作业|课后测试题)/);
+  const chapter = m ? m[1] : '课堂练习';
+  const title = m ? m[2].trim() : '课堂练习';
+  let c = CHAPTERS.find(x => x.chapter === chapter);
+  if (!c) { c = { chapter, title, sheets: [] }; CHAPTERS.push(c); }
+  else if (c.title === '' && title !== '') { c.title = title; }
+  c.sheets.push(s);
+}
+
+/* ---------- 存储：身份 = 名字#4位随机码，键用哈希加盐 ---------- */
+const USER_KEY = 'ykt-current-user';
+const IDX_KEY = 'ykt-idx';
+const SALT = 'ykt-2026';
+function hashKey(s) {
+  let h = 0x811c9dc5;
+  const str = s + '|' + SALT;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return ('0000000' + (h >>> 0).toString(16)).slice(-8);
+}
+function baseOf(id) { return (id || '').split('#')[0]; }
+let idx = {};
+try { idx = JSON.parse(localStorage.getItem(IDX_KEY) || '{}'); } catch (e) { idx = {}; }
+function saveIdx() { localStorage.setItem(IDX_KEY, JSON.stringify(idx)); }
+function storeKey(id) { return STORE_KEY + ':p:' + hashKey(id); }
+
+function migrateLegacy() {
+  const moved = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (!k || !k.startsWith(STORE_KEY + ':') || k.startsWith(STORE_KEY + ':p:')) continue;
+    const name = k.slice((STORE_KEY + ':').length);
+    if (!name) continue;
+    const code = Math.random().toString(36).slice(2, 6);
+    const newId = name + '#' + code;
+    localStorage.setItem(storeKey(newId), localStorage.getItem(k));
+    localStorage.removeItem(k);
+    moved[name] = newId;
+  }
+  const names = Object.keys(moved);
+  if (names.length && !localStorage.getItem(USER_KEY)) {
+    localStorage.setItem(USER_KEY, moved[names[0]]);
+  }
+}
+migrateLegacy();
+let userName = localStorage.getItem(USER_KEY) || '';
+
+let store = {};
+function loadStore() {
+  store = {};
+  try { store = JSON.parse(localStorage.getItem(storeKey(userName)) || '{}'); } catch (e) { store = {}; }
+  if (!store.wrong) store.wrong = {};
+  // 旧版错题格式 1 → {count: 0}
+  for (const k of Object.keys(store.wrong)) {
+    if (typeof store.wrong[k] !== 'object') store.wrong[k] = { count: 0 };
+  }
+}
+function saveStore() { localStorage.setItem(storeKey(userName), JSON.stringify(store)); }
+
+/* ---------- 登录 ---------- */
+function applyUser(id) {
+  userName = id;
+  localStorage.setItem(USER_KEY, id);
+  const b = baseOf(id);
+  if (!idx[b]) idx[b] = [];
+  if (!idx[b].includes(id)) idx[b].push(id);
+  saveIdx();
+  $('identChoices').classList.add('hidden');
+  loadStore();
+  sel = {};
+  if (store.sel) {
+    for (const [s, idxs] of Object.entries(store.sel)) sel[s] = new Set(idxs);
+  }
+  renderHome();
+  $('userNameInput').value = userName;
+}
+function renderIdentChoices(name, list) {
+  const box = $('identChoices');
+  box.innerHTML = '';
+  box.classList.remove('hidden');
+  for (const id of list) {
+    const b = document.createElement('button');
+    b.className = 'back-btn';
+    b.textContent = '进入 ' + id;
+    b.addEventListener('click', () => applyUser(id));
+    box.appendChild(b);
+  }
+  const nb = document.createElement('button');
+  nb.className = 'back-btn';
+  nb.textContent = '我是新人，新建身份';
+  nb.addEventListener('click', () => {
+    applyUser(name + '#' + Math.random().toString(36).slice(2, 6));
+    toast('新身份已创建，请记住：' + userName);
+  });
+  box.appendChild(nb);
+}
+function login(input) {
+  const name = (input || '').trim();
+  if (!name) { toast('输入名字'); return; }
+  if (name.includes('#')) {
+    applyUser(name);
+    return;
+  }
+  const list = idx[name] || [];
+  if (!list.length) {
+    applyUser(name + '#' + Math.random().toString(36).slice(2, 6));
+    toast('新身份已创建，请记住：' + userName);
+    return;
+  }
+  if (list.length === 1) {
+    applyUser(list[0]);
+    return;
+  }
+  renderIdentChoices(name, list);
+}
+loadStore();
+
+/* ---------- 状态 ---------- */
+let quiz = [];        // 当前题目队列
+let pos = 0;
+let correctCount = 0;
+let judged = false;
+let mode = 'seq';
+let qmode = 'practice';
+let optShuffle = false;
+let sel = {};         // 已选题：{题库名: Set(题号)}
+let pickerMode = '';  // 选择页来源：题库名 或 'wrong'
+let curAnswer = '';   // 本题展示用的正确选项字母（乱序后重排）
+let curOpts = [];     // 本题渲染的选项 [{key, orig, text, images}]
+let sessionAnswers = {};  // 本次练习作答记录
+let sessionOrig = {};     // 本次练习作答的原始选项字母
+
+/* ---------- 工具 ---------- */
+const $ = id => document.getElementById(id);
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+/* ---------- 选题集合 ---------- */
+function selCount() {
+  return Object.values(sel).reduce((s, set) => s + set.size, 0);
+}
+function sheetSelState(s) {
+  const set = sel[s];
+  if (!set || set.size === 0) return 'off';
+  return set.size === BY_SHEET[s].length ? 'on' : 'partial';
+}
+function toggleWholeSheet(s) {
+  const state = sheetSelState(s);
+  if (state === 'on') delete sel[s];
+  else sel[s] = new Set(BY_SHEET[s].map(q => q.index));
+  saveStore();
+  updatePickCount();
+  refreshChip(s);
+}
+function refreshChip(s) {
+  const chip = document.querySelector('.chip[data-sheet="' + s + '"]');
+  if (!chip) return;
+  const state = sheetSelState(s);
+  chip.classList.remove('on', 'partial');
+  if (state !== 'off') chip.classList.add(state);
+  chip.setAttribute('aria-pressed', state !== 'off');
+  chip.closest('.stack-bar').classList.toggle(
+    'on', chip.closest('.stack-bar').querySelectorAll('.chip.on, .chip.partial').length > 0);
+}
+
+/* ---------- 首页 ---------- */
+function renderHome() {
+  $('totalCount').textContent = DATA.length;
+  $('userNameInput').value = userName || '';
+  const stackEl = $('stack');
+  stackEl.innerHTML = '';
+  for (const c of CHAPTERS) {
+    const bar = document.createElement('div');
+    bar.className = 'stack-bar';
+    const label = document.createElement('div');
+    label.className = 'stack-label';
+    const chap = document.createElement('span');
+    chap.className = 'stack-chapter';
+    chap.innerHTML = '<span class="mono">' + c.chapter + '</span>';
+    const nm = document.createElement('span');
+    nm.className = 'stack-name';
+    nm.textContent = c.title;
+    label.appendChild(chap); label.appendChild(nm);
+    const toggles = document.createElement('div');
+    toggles.className = 'stack-toggles';
+    for (const s of c.sheets) {
+      const n = BY_SHEET[s].length;
+      const sub = CARD_ALIAS[s] || (s.includes('课后测试') ? '课后测试' : '作业');
+      const wrap = document.createElement('span');
+      wrap.style.display = 'inline-flex';
+      wrap.style.gap = '4px';
+      const b = document.createElement('button');
+      b.className = 'chip';
+      b.dataset.sheet = s;
+      b.setAttribute('aria-pressed', 'false');
+      b.innerHTML = sub + ' <span class="mono">' + n + '</span>';
+      b.addEventListener('click', () => toggleWholeSheet(s));
+      const pick = document.createElement('button');
+      pick.className = 'chip-sel';
+      pick.textContent = '选题';
+      pick.title = '逐题选择';
+      pick.addEventListener('click', () => openPicker(s));
+      wrap.appendChild(b); wrap.appendChild(pick);
+      toggles.appendChild(wrap);
+    }
+    bar.appendChild(label); bar.appendChild(toggles);
+    stackEl.appendChild(bar);
+  }
+  if (store.sel) {
+    sel = {};
+    for (const [s, idxs] of Object.entries(store.sel)) {
+      sel[s] = new Set(idxs);
+    }
+  }
+  for (const s of SHEET_ORDER) refreshChip(s);
+  if (store.mode === 'rand') setMode('rand');
+  if (store.qmode === 'test') setQmode('test');
+  if (store.optShuffle) {
+    optShuffle = true;
+    $('optShuffleBtn').classList.add('on');
+    $('optShuffleBtn').setAttribute('aria-pressed', 'true');
+  }
+  updatePickCount();
+  $('wrongCount').textContent = Object.keys(store.wrong).length || '';
+}
+
+function updatePickCount() {
+  const n = selCount();
+  $('pickCount').textContent = n;
+  $('startBtn').disabled = n === 0;
+  $('startBtn').innerHTML = '<span class="led"></span>' +
+    (qmode === 'test' ? '开始测试' : '开始练习');
+  const dc = $('drawCount');
+  dc.max = n;
+  if (Number(dc.value) > n && n > 0) dc.value = Math.min(10, n);
+  $('drawBtn').disabled = n === 0;
+}
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('#modePick button').forEach(b =>
+    b.classList.toggle('on', b.dataset.mode === m));
+}
+function setQmode(m) {
+  qmode = m;
+  document.querySelectorAll('#qmodePick button').forEach(b =>
+    b.classList.toggle('on', b.dataset.qmode === m));
+  $('drawRow').classList.toggle('hidden', m !== 'test');
+  updatePickCount();
+}
+$('modePick').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  setMode(b.dataset.mode);
+});
+$('qmodePick').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  setQmode(b.dataset.qmode);
+});
+$('optShuffleBtn').addEventListener('click', () => {
+  optShuffle = !optShuffle;
+  $('optShuffleBtn').classList.toggle('on', optShuffle);
+  $('optShuffleBtn').setAttribute('aria-pressed', optShuffle);
+  store.optShuffle = optShuffle; saveStore();
+});
+$('switchUserBtn').addEventListener('click', () => {
+  login($('userNameInput').value);
+});
+$('userNameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') login($('userNameInput').value);
+});
+$('drawBtn').addEventListener('click', () => {
+  if (!selCount()) { toast('请先选题'); return; }
+  const n = Math.max(1, Math.min(Number($('drawCount').value) || 1, selCount()));
+  const pool = [];
+  for (const s of SHEET_ORDER) {
+    const set = sel[s];
+    if (!set || !set.size) continue;
+    for (const q of BY_SHEET[s]) {
+      if (set.has(q.index)) pool.push(q);
+    }
+  }
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  quiz = pool.slice(0, n);
+  beginQuizScreen();
+});
+
+/* ---------- 逐题选择页 ---------- */
+function openPicker(sheet) {
+  pickerMode = sheet;
+  $('home').classList.add('hidden');
+  $('picker').classList.remove('hidden');
+  $('pickerTitle').textContent = sheet === 'wrong' ? '错题本' : sheet;
+  renderPickList();
+}
+function pickerQuestions() {
+  if (pickerMode === 'wrong') {
+    return DATA.filter(q => store.wrong[qid(q)]);
+  }
+  return BY_SHEET[pickerMode] || [];
+}
+function renderPickList() {
+  const list = $('pickList');
+  list.innerHTML = '';
+  const qs = pickerQuestions();
+  if (!qs.length) {
+    const empty = document.createElement('div');
+    empty.className = 'pick-item';
+    empty.style.cursor = 'default';
+    empty.innerHTML = '<span class="pick-text">还没有错题</span>';
+    list.appendChild(empty);
+    $('pickerToggleBtn').textContent = '全选';
+    return;
+  }
+  const allOn = qs.every(q => (sel[q.sheet] || new Set()).has(q.index));
+  $('pickerToggleBtn').textContent = allOn ? '全不选' : '全选';
+  for (const q of qs) {
+    const row = document.createElement('div');
+    row.className = 'pick-item';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = (sel[q.sheet] || new Set()).has(q.index);
+    cb.addEventListener('change', () => {
+      if (cb.checked) {
+        if (!sel[q.sheet]) sel[q.sheet] = new Set();
+        sel[q.sheet].add(q.index);
+      } else if (sel[q.sheet]) {
+        sel[q.sheet].delete(q.index);
+        if (!sel[q.sheet].size) delete sel[q.sheet];
+      }
+      row.classList.toggle('on', cb.checked);
+      saveStore();
+      if (pickerMode !== 'wrong') refreshChip(q.sheet);
+    });
+    row.addEventListener('click', e => {
+      if (e.target !== cb) cb.click();
+    });
+    const num = document.createElement('span');
+    num.className = 'pick-num mono';
+    num.textContent = q.index + '.';
+    const txt = document.createElement('span');
+    txt.className = 'pick-text';
+    txt.textContent = (q.body || '').slice(0, 42);
+    row.appendChild(cb); row.appendChild(num); row.appendChild(txt);
+    row.classList.toggle('on', cb.checked);
+    list.appendChild(row);
+  }
+}
+$('pickerToggleBtn').addEventListener('click', () => {
+  const qs = pickerQuestions();
+  if (!qs.length) return;
+  const allOn = qs.every(q => (sel[q.sheet] || new Set()).has(q.index));
+  for (const q of qs) {
+    if (allOn) {
+      if (sel[q.sheet]) sel[q.sheet].delete(q.index);
+      if (sel[q.sheet] && !sel[q.sheet].size) delete sel[q.sheet];
+    } else {
+      if (!sel[q.sheet]) sel[q.sheet] = new Set();
+      sel[q.sheet].add(q.index);
+    }
+  }
+  saveStore();
+  if (pickerMode !== 'wrong') refreshChip(pickerMode);
+  renderPickList();
+});
+$('pickerBackBtn').addEventListener('click', () => {
+  $('picker').classList.add('hidden');
+  $('home').classList.remove('hidden');
+  updatePickCount();
+});
+$('pickerDoneBtn').addEventListener('click', () => {
+  $('picker').classList.add('hidden');
+  $('home').classList.remove('hidden');
+  updatePickCount();
+});
+
+/* ---------- 出题 ---------- */
+function buildQuizFromSel(shuffle) {
+  quiz = [];
+  for (const s of SHEET_ORDER) {
+    const set = sel[s];
+    if (!set || !set.size) continue;
+    for (const q of BY_SHEET[s]) {
+      if (set.has(q.index)) quiz.push(q);
+    }
+  }
+  if (shuffle) {
+    for (let i = quiz.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [quiz[i], quiz[j]] = [quiz[j], quiz[i]];
+    }
+  }
+}
+
+function beginQuizScreen() {
+  if (!quiz.length) { toast('没有题目'); return; }
+  pos = 0; correctCount = 0; sessionAnswers = {}; sessionOrig = {};
+  $('home').classList.add('hidden');
+  $('picker').classList.add('hidden');
+  $('result').classList.add('hidden');
+  $('quiz').classList.remove('hidden');
+  renderQuestion();
+}
+
+function startQuiz(shuffle) {
+  buildQuizFromSel(shuffle);
+  beginQuizScreen();
+}
+
+$('startBtn').addEventListener('click', () => {
+  if (!selCount()) { toast('请先选题'); return; }
+  store.sel = {};
+  for (const [s, set] of Object.entries(sel)) store.sel[s] = [...set];
+  store.mode = mode; store.qmode = qmode; saveStore();
+  startQuiz(mode === 'rand');
+});
+$('wrongBookBtn').addEventListener('click', () => {
+  if (!Object.keys(store.wrong).length) { toast('还没有错题'); return; }
+  openPicker('wrong');
+});
+
+/* ---------- 答题 ---------- */
+function renderQuestion() {
+  const q = quiz[pos];
+  judged = false;
+  $('quizMeta').textContent = q.sheet;
+  $('quizPos').textContent = (pos + 1) + ' / ' + quiz.length;
+  $('barFill').style.width = ((pos) / quiz.length * 100) + '%';
+  $('qNo').textContent = '第 ' + q.index + ' 题';
+  $('qType').textContent = q.type;
+  $('qBody').textContent = q.body;
+  document.querySelectorAll('.q-img').forEach(el => el.remove());
+  if (q.images && q.images.length) {
+    for (const src of q.images) {
+      const img = document.createElement('img');
+      img.className = 'q-img';
+      img.src = src;
+      img.alt = '题目图片';
+      $('qBody').insertAdjacentElement('afterend', img);
+    }
+  }
+  const optsEl = $('opts');
+  optsEl.innerHTML = '';
+  if (q.type === '填空题') {
+    const n = Array.isArray(q.answer) ? q.answer.length : 0;
+    for (let i = 0; i < n; i++) {
+      const row = document.createElement('div');
+      row.className = 'fill-row';
+      const lab = document.createElement('span');
+      lab.className = 'fill-label';
+      lab.textContent = '填空' + (i + 1);
+      const inp = document.createElement('input');
+      inp.className = 'fill-input';
+      inp.type = 'text';
+      inp.autocomplete = 'off';
+      inp.spellcheck = false;
+      inp.dataset.i = i;
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') submitFill(); });
+      row.appendChild(lab); row.appendChild(inp);
+      optsEl.appendChild(row);
+    }
+    optsEl.querySelector('.fill-input').focus();
+  } else {
+    let opts = q.options.map(o => Object.assign({}, o));
+    let ansKey = q.answer;
+    if (optShuffle) {
+      for (let i = opts.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [opts[i], opts[j]] = [opts[j], opts[i]];
+      }
+      const KEYS = 'ABCDEFGH';
+      const idx = opts.findIndex(o => o.key === q.answer);
+      opts = opts.map((o, i) => Object.assign({}, o, { key: KEYS[i], orig: o.key }));
+      if (idx >= 0) ansKey = KEYS[idx];
+    }
+    curAnswer = ansKey;
+    curOpts = opts;
+    opts.forEach((o, i) => {
+      const key = o.key || String(i);
+      const b = document.createElement('button');
+      b.className = 'opt';
+      b.dataset.key = key;
+      b.innerHTML = '<span class="opt-key">' + key + '</span>' + escapeHtml(o.text || '');
+      if (o.images && o.images.length) {
+        for (const src of o.images) {
+          b.innerHTML += '<img class="opt-img" src="' + src + '" alt="">';
+        }
+      }
+      b.addEventListener('click', () => choose(key));
+      optsEl.appendChild(b);
+    });
+  }
+  $('feedback').classList.add('hidden');
+  $('nextBtn').classList.add('hidden');
+  $('addWrongBtn').classList.add('hidden');
+  const ex = document.getElementById('explainBox');
+  if (ex) ex.remove();
+  const hint = document.querySelector('.key-hint');
+  hint.textContent = q.type === '填空题'
+    ? '输入答案后回车提交 · 再回车下一题'
+    : '键盘 1–6 选答 · 回车下一题';
+  window.scrollTo(0, 0);
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function showExplain(q) {
+  if (!q.explain) return;
+  const div = document.createElement('div');
+  div.className = 'explain';
+  div.id = 'explainBox';
+  div.innerHTML = '<span class="explain-label">解析</span>' + escapeHtml(q.explain);
+  const nextRow = $('nextBtn').closest('.next-row');
+  nextRow.insertAdjacentElement('beforebegin', div);
+}
+
+function finishJudge(ok, correctText) {
+  const id = qid(quiz[pos]);
+  if (ok) {
+    correctCount++;
+    if (store.wrong[id]) {
+      store.wrong[id].count = (store.wrong[id].count || 0) + 1;
+      if (store.wrong[id].count >= 3) {
+        delete store.wrong[id];
+        toast('连续 3 次答对，已移出错题本');
+      }
+    }
+  } else {
+    store.wrong[id] = { count: 0 };
+  }
+  saveStore();
+  $('barFill').style.width = ((pos + 1) / quiz.length * 100) + '%';
+  if (qmode === 'test') {
+    if (pos + 1 < quiz.length) { pos++; renderQuestion(); }
+    else showResult();
+    return;
+  }
+  const fb = $('feedback');
+  fb.classList.remove('hidden', 'good', 'bad');
+  if (ok) {
+    fb.textContent = '回答正确';
+    fb.classList.add('good');
+  } else {
+    fb.textContent = '回答错误，正确答案：' + correctText;
+    fb.classList.add('bad');
+  }
+  showExplain(quiz[pos]);
+  $('addWrongBtn').classList.toggle('hidden',
+    qmode !== 'practice' || !!store.wrong[id]);
+  $('nextBtn').classList.remove('hidden');
+  $('nextBtn').textContent = pos + 1 < quiz.length ? '下一题' : '查看结果';
+}
+
+function choose(key) {
+  if (judged) return;
+  judged = true;
+  const q = quiz[pos];
+  sessionAnswers[qid(q)] = key;
+  const opt = curOpts.find(o => o.key === key);
+  sessionOrig[qid(q)] = opt ? (opt.orig || opt.key) : key;
+  const ok = key === curAnswer;
+  if (qmode !== 'test') {
+    document.querySelectorAll('.opt').forEach(b => {
+      b.disabled = true;
+      if (b.dataset.key === curAnswer) b.classList.add('right');
+    });
+    if (!ok) {
+      document.querySelector('.opt[data-key="' + key + '"]').classList.add('wrong');
+    }
+  }
+  finishJudge(ok, curAnswer);
+}
+
+function submitFill() {
+  if (judged) return;
+  const q = quiz[pos];
+  const inputs = document.querySelectorAll('.fill-input');
+  if (!inputs.length) return;
+  let ok = true;
+  const given = [];
+  const correct = [];
+  inputs.forEach(inp => {
+    const i = Number(inp.dataset.i);
+    const val = inp.value.trim();
+    given.push(val);
+    const accepts = Array.isArray(q.answer) ? (q.answer[i] || []) : [];
+    correct.push(accepts.join('/'));
+    const hit = accepts.some(a => String(a).trim().toLowerCase() === val.toLowerCase());
+    if (qmode !== 'test') {
+      inp.disabled = true;
+      if (hit) inp.classList.add('right');
+      else { ok = false; inp.classList.add('wrong'); }
+    } else if (!hit) {
+      ok = false;
+    }
+  });
+  judged = true;
+  sessionAnswers[qid(q)] = given.join(';');
+  finishJudge(ok, correct.join('；'));
+}
+
+function next() {
+  if (!judged) return;
+  if (pos + 1 < quiz.length) { pos++; renderQuestion(); }
+  else showResult();
+}
+$('nextBtn').addEventListener('click', next);
+$('addWrongBtn').addEventListener('click', () => {
+  const id = qid(quiz[pos]);
+  store.wrong[id] = { count: 0 };
+  saveStore();
+  $('addWrongBtn').classList.add('hidden');
+  toast('已加入错题本');
+});
+
+/* ---------- 结果 ---------- */
+function showResult() {
+  $('quiz').classList.add('hidden');
+  $('result').classList.remove('hidden');
+  const total = quiz.length;
+  const pct = Math.round(correctCount / total * 100);
+  $('resultTitle').textContent = qmode === 'test' ? '测试完成' : '练习完成';
+  $('resultPct').textContent = pct + '%';
+  $('resultSub').textContent = '答对 ' + correctCount + ' / ' + total + ' 题';
+  const wrongQs = quiz.filter(q => store.wrong[qid(q)]);
+  const ww = $('wrongListWrap'), wl = $('wrongList');
+  if (wrongQs.length) {
+    ww.classList.remove('hidden');
+    wl.innerHTML = '';
+    for (const q of wrongQs) {
+      const div = document.createElement('div');
+      div.className = 'wrong-item';
+      let htmlStr = '<span class="mono">' + q.index + '.</span> ' + escapeHtml(q.body) +
+        '<br><span class="wb">你的答案 </span><span class="ans-bad">' + escapeHtml(pickedOf(q)) +
+        '</span><span class="wb"> · 正确答案 </span><span class="ans-good">' + escapeHtml(q.answer) + '</span>';
+      if (q.explain) {
+        htmlStr += '<br><span class="wb">解析 </span>' + escapeHtml(q.explain);
+      }
+      div.innerHTML = htmlStr;
+      wl.appendChild(div);
+    }
+  } else {
+    ww.classList.add('hidden');
+  }
+}
+
+function pickedOf(q) {
+  return sessionOrig[qid(q)] || sessionAnswers[qid(q)] || '未作答';
+}
+$('againBtn').addEventListener('click', () => {
+  startQuiz(mode === 'rand');
+});
+$('onlyWrongBtn').addEventListener('click', () => {
+  if (!Object.keys(store.wrong).length) { toast('没有错题'); return; }
+  $('result').classList.add('hidden');
+  openPicker('wrong');
+});
+$('homeBtn').addEventListener('click', goHome);
+$('backBtn').addEventListener('click', goHome);
+
+function goHome() {
+  $('quiz').classList.add('hidden');
+  $('result').classList.add('hidden');
+  $('picker').classList.add('hidden');
+  $('home').classList.remove('hidden');
+  $('wrongCount').textContent = Object.keys(store.wrong).length || '';
+  updatePickCount();
+}
+
+/* ---------- 键盘 ---------- */
+document.addEventListener('keydown', e => {
+  if ($('quiz').classList.contains('hidden')) return;
+  if (!judged && /^[1-6]$/.test(e.key) && e.target.tagName !== 'INPUT') {
+    const idx = Number(e.key) - 1;
+    const b = document.querySelectorAll('.opt')[idx];
+    if (b && !b.disabled) choose(b.dataset.key);
+  } else if (e.key === 'Enter' && judged && e.target.tagName !== 'INPUT') {
+    next();
+  }
+});
+
+renderHome();
+
+/* 离线缓存：仅在 http/https 下注册，file:// 打开时自动跳过 */
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

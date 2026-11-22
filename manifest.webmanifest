@@ -1,0 +1,14 @@
+{
+  "name": "课程题库 做题练习",
+  "short_name": "课程题库",
+  "description": "通信原理、电磁场电磁波课程题库，含解析与错题本",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#10161F",
+  "theme_color": "#10161F",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
